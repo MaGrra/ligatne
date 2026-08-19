@@ -3,47 +3,57 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#14532d">
-<title>Rezultāti · Līgatne</title>
+<meta name="theme-color" content="#0E3B2A">
+<title>Rezultāti · Līgatnes acīte</title>
 <style>
 :root{
-  --bg:#f4f6f4; --card:#fff; --ink:#12181a; --muted:#6b7a72; --line:#e3e8e4;
-  --brand:#14532d; --brand2:#2f7a4a; --accent:#e8a020;
-  --g1:#d4a017; --g2:#9aa5ad; --g3:#b3743a;
-  --shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px -12px rgba(0,0,0,.18);
+  --forest:#0E3B2A; --forest2:#1E6B41; --leaf:#5BA83C; --leaf-l:#8CC63F;
+  --navy:#123A6B; --sky:#4FA8E0; --river:#2E7CB8;
+  --sand:#C9702F; --brick:#A8391F; --tan:#D9A05B;
+  --bg:#F3F6F1; --card:#fff; --ink:#12211A; --muted:#66796C; --line:#DFE7DC;
+  --g1:#D9A61C; --g2:#9AA8AE; --g3:#B3743A;
+  --shadow:0 1px 2px rgba(14,59,42,.06),0 10px 26px -14px rgba(14,59,42,.30);
 }
 @media (prefers-color-scheme:dark){
-  :root{--bg:#0e1512;--card:#16201c;--ink:#eaf0ec;--muted:#93a49b;--line:#243029;
-        --brand:#1d6b3c;--brand2:#3d9960;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);}
+  :root{--bg:#0B1712;--card:#12211A;--ink:#E9F1EA;--muted:#8DA396;--line:#1F332A;
+        --forest:#0B2E21;--forest2:#1E6B41;--shadow:0 1px 2px rgba(0,0,0,.45),0 10px 26px -14px rgba(0,0,0,.7);}
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0}
 body{
   background:var(--bg);color:var(--ink);
   font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
-  -webkit-font-smoothing:antialiased;
-  padding-bottom:env(safe-area-inset-bottom);
+  -webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom);
 }
+.banner{background:var(--forest);line-height:0;padding-top:env(safe-area-inset-top)}
+.banner img{width:100%;height:auto;display:block}
+.stripes{height:7px;display:flex}
+.stripes i{flex:1}
+.stripes i:nth-child(1){background:var(--navy)}
+.stripes i:nth-child(2){background:var(--leaf)}
+.stripes i:nth-child(3){background:#fff}
+.stripes i:nth-child(4){background:var(--navy)}
+
 header{
   position:sticky;top:0;z-index:20;
-  background:linear-gradient(160deg,var(--brand),var(--brand2));
-  color:#fff;padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;
-  box-shadow:0 2px 12px rgba(0,0,0,.18);
+  background:linear-gradient(165deg,var(--forest),var(--forest2));
+  color:#fff;padding:11px 16px 11px;
+  box-shadow:0 2px 14px rgba(0,0,0,.22);
 }
-.h-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
-h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.h-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+h1{margin:0;font-size:18px;font-weight:800;letter-spacing:.01em;text-transform:uppercase}
 .status{display:flex;align-items:center;gap:6px;font-size:12px;opacity:.92;white-space:nowrap}
-.dot{width:7px;height:7px;border-radius:50%;background:#7ef2a8;animation:pulse 2.4s infinite}
-.dot.stale{background:#ffce5c;animation:none}
-.dot.off{background:#ff8b78;animation:none}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(126,242,168,.6)}70%{box-shadow:0 0 0 7px rgba(126,242,168,0)}100%{box-shadow:0 0 0 0 rgba(126,242,168,0)}}
-nav{display:flex;gap:6px;margin-top:14px}
+.dot{width:8px;height:8px;border-radius:50%;background:var(--leaf-l);animation:pulse 2.4s infinite}
+.dot.stale{background:#F2C14E;animation:none}
+.dot.off{background:#E2705A;animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(140,198,63,.65)}70%{box-shadow:0 0 0 8px rgba(140,198,63,0)}100%{box-shadow:0 0 0 0 rgba(140,198,63,0)}}
+nav{display:flex;gap:6px;margin-top:12px}
 nav button{
   flex:1;appearance:none;border:0;border-radius:999px;padding:10px 6px;
-  font:inherit;font-size:14px;font-weight:600;cursor:pointer;
-  background:rgba(255,255,255,.16);color:#fff;transition:background .15s;
+  font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;letter-spacing:.01em;
+  background:rgba(255,255,255,.15);color:#fff;transition:background .15s;
 }
-nav button[aria-selected=true]{background:#fff;color:var(--brand)}
+nav button[aria-selected=true]{background:#fff;color:var(--forest)}
 main{padding:14px 12px 32px;max-width:640px;margin:0 auto}
 .list{display:flex;flex-direction:column;gap:10px}
 
@@ -51,8 +61,7 @@ main{padding:14px 12px 32px;max-width:640px;margin:0 auto}
   display:flex;align-items:center;gap:14px;background:var(--card);
   border:1px solid var(--line);border-left:4px solid transparent;
   border-radius:14px;padding:14px 15px;box-shadow:var(--shadow);
-  text-align:left;font:inherit;color:inherit;width:100%;
-  transition:transform .08s;
+  text-align:left;font:inherit;color:inherit;width:100%;transition:transform .08s;
 }
 button.row{cursor:pointer}
 button.row:active{transform:scale(.985)}
@@ -61,59 +70,66 @@ button.row:active{transform:scale(.985)}
   flex:0 0 36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;
   font-weight:800;font-size:15px;background:var(--bg);color:var(--muted);font-variant-numeric:tabular-nums;
 }
-.p1 .place{background:var(--g1);color:#3b2c00} .p2 .place{background:var(--g2);color:#1f262b} .p3 .place{background:var(--g3);color:#301a08}
+.p1 .place{background:var(--g1);color:#3B2C00} .p2 .place{background:var(--g2);color:#1F262B} .p3 .place{background:var(--g3);color:#301A08}
 .code{
-  flex:0 0 auto;min-width:46px;padding:0 8px;height:36px;border-radius:11px;
+  flex:0 0 auto;min-width:48px;padding:0 9px;height:36px;border-radius:11px;
   display:flex;align-items:center;justify-content:center;
   font-weight:800;font-size:12.5px;letter-spacing:.02em;
-  background:var(--bg);color:var(--brand2);
+  background:rgba(91,168,60,.14);color:var(--forest2);
 }
 .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
-.nm{
-  font-weight:600;font-size:16.5px;line-height:1.25;letter-spacing:-.005em;
-  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
-}
+.nm{font-weight:600;font-size:16.5px;line-height:1.25;letter-spacing:-.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sub{font-size:12.5px;line-height:1.3;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar{height:4px;border-radius:2px;background:var(--line);overflow:hidden;margin-top:1px}
-.bar i{display:block;height:100%;background:var(--brand2);border-radius:2px}
-.pts{
-  flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:2px;
-  font-variant-numeric:tabular-nums;
-}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--forest2),var(--leaf));border-radius:2px}
+.pts{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-variant-numeric:tabular-nums}
 .pts b{font-weight:800;font-size:20px;line-height:1;letter-spacing:-.02em}
-.pts small{font-size:10.5px;font-weight:600;color:var(--muted);letter-spacing:.01em}
+.pts small{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.03em}
 .empty{text-align:center;color:var(--muted);padding:40px 16px;font-size:15px;line-height:1.5}
 
-.sheet{position:fixed;inset:0;z-index:40;display:none}
+#map{height:calc(100vh - 260px);min-height:340px;border-radius:16px;overflow:hidden;
+  border:1px solid var(--line);box-shadow:var(--shadow);background:var(--card)}
+.maptools{display:flex;gap:8px;margin-bottom:10px}
+.mbtn{flex:1;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);
+  font:inherit;font-size:14px;font-weight:650;padding:11px 10px;border-radius:12px;cursor:pointer;
+  box-shadow:var(--shadow)}
+.mbtn.on{background:var(--forest2);color:#fff;border-color:var(--forest2)}
+.mnote{font-size:12.5px;color:var(--muted);margin-top:10px;text-align:center;line-height:1.4}
+.pin{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;
+  background:var(--forest2);color:#fff;font:700 10.5px/1 -apple-system,sans-serif;
+  border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.me{width:18px;height:18px;border-radius:50%;background:var(--river);border:3px solid #fff;
+  box-shadow:0 0 0 2px rgba(46,124,184,.4),0 2px 6px rgba(0,0,0,.4)}
+
+.sheet{position:fixed;inset:0;z-index:1200;display:none}
 .sheet.on{display:block}
-.scrim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
-.panel{
-  position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;
-  background:var(--bg);border-radius:20px 20px 0 0;padding:8px 12px calc(24px + env(safe-area-inset-bottom));
-  animation:up .22s ease-out;
-}
+.scrim{position:absolute;inset:0;background:rgba(6,20,14,.5)}
+.panel{position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;background:var(--bg);
+  border-radius:20px 20px 0 0;padding:8px 12px calc(24px + env(safe-area-inset-bottom));animation:up .22s ease-out}
 @keyframes up{from{transform:translateY(16px);opacity:.6}to{transform:none;opacity:1}}
 .grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:8px auto 14px}
 .phead{display:flex;align-items:center;gap:14px;padding:0 4px 14px}
 .phead .who{gap:4px}
-.phead .big{font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1}
-.tline{
-  display:flex;align-items:center;gap:12px;padding:12px 13px;
-  background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:7px;
-}
+.phead .big{font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--forest2)}
+.tline{display:flex;align-items:center;gap:12px;padding:12px 13px;background:var(--card);
+  border:1px solid var(--line);border-radius:12px;margin-bottom:7px}
 .tline.none{opacity:.45}
-.tag{
-  flex:0 0 auto;min-width:44px;text-align:center;font-size:11.5px;font-weight:700;
-  padding:4px 7px;border-radius:7px;background:var(--bg);color:var(--muted);letter-spacing:.02em;
-}
+.tag{flex:0 0 auto;min-width:46px;text-align:center;font-size:11.5px;font-weight:800;padding:4px 7px;
+  border-radius:7px;background:rgba(91,168,60,.13);color:var(--forest2);letter-spacing:.02em}
 .tname{flex:1;min-width:0;font-size:14.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tval{flex:0 0 auto;font-weight:700;font-size:15.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30px}
 .refresh{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--muted);
   font:inherit;font-size:13px;padding:9px 16px;border-radius:999px;cursor:pointer}
+.leaflet-popup-content{margin:10px 12px;font:14px/1.4 -apple-system,sans-serif}
+.leaflet-popup-content b{color:var(--forest)}
 </style>
 </head>
 <body>
+
+<div class="banner"><img src="banner.jpg" alt="Līgatnes acīte" fetchpriority="high"></div>
+<div class="stripes"><i></i><i></i><i></i><i></i></div>
+
 <header>
   <div class="h-top">
     <h1>Rezultāti</h1>
@@ -122,10 +138,19 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
   <nav role="tablist">
     <button role="tab" id="tab-total" aria-selected="true">Kopvērtējums</button>
     <button role="tab" id="tab-task" aria-selected="false">Uzdevumi</button>
+    <button role="tab" id="tab-map" aria-selected="false">Karte</button>
   </nav>
 </header>
 
 <main>
+  <div id="mapwrap" hidden>
+    <div class="maptools">
+      <button class="mbtn" id="btnLocate">Rādīt, kur es esmu</button>
+      <button class="mbtn" id="btnFit">Visi uzdevumi</button>
+    </div>
+    <div id="map"></div>
+    <div class="mnote" id="mapNote">Atļauj atrašanās vietu, lai redzētu sevi kartē.</div>
+  </div>
   <div class="list" id="list"><div class="empty">Ielādē rezultātus…</div></div>
   <footer>
     <button class="refresh" id="btnRefresh">Atjaunot tagad</button>
@@ -154,179 +179,249 @@ const SHEET_ID = '1yNf7ao3RczgtD4VqRvhtDAxhlYWqI5p2SeWMpV6Mn3E';
 const GID = '813088766';
 const SRC = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID;
 const REFRESH_MS = 30000;
-const CACHE_KEY = 'ligatne-results-v2';
-
+const CACHE_KEY = 'ligatne-results-v3';
 const T_FIRST = 2, T_LAST = 22, I_PEN = 23, I_TOTAL = 24, I_PLACE = 25;
 
 function parseCSV(text){
   const rows=[]; let row=[], field='', q=false;
   for(let i=0;i<text.length;i++){
     const c=text[i];
-    if(q){
-      if(c === '"'){ if(text[i+1] === '"'){ field+='"'; i++; } else q=false; }
-      else field+=c;
-    } else if(c === '"'){ q=true; }
-    else if(c === ','){ row.push(field); field=''; }
-    else if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; }
-    else if(c !== '\r'){ field+=c; }
+    if(q){ if(c==='"'){ if(text[i+1]==='"'){field+='"';i++;} else q=false; } else field+=c; }
+    else if(c==='"'){ q=true; }
+    else if(c===','){ row.push(field); field=''; }
+    else if(c==='\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+    else if(c!=='\r'){ field+=c; }
   }
-  if(field.length || row.length){ row.push(field); rows.push(row); }
+  if(field.length||row.length){ row.push(field); rows.push(row); }
   return rows;
 }
-
 function cellNum(v){
-  const s = (v==null?'':String(v)).trim();
-  if(s === '') return null;
-  const n = parseFloat(s.replace(',', '.'));
-  return isNaN(n) ? null : n;
+  const s=(v==null?'':String(v)).trim();
+  if(s==='') return null;
+  const n=parseFloat(s.replace(',','.'));
+  return isNaN(n)?null:n;
+}
+function parseLatLng(v){
+  const m=String(v||'').trim().match(/^(-?\d+(?:\.\d+)?)\s*[,;]\s*(-?\d+(?:\.\d+)?)$/);
+  if(!m) return null;
+  const lat=+m[1], lng=+m[2];
+  if(Math.abs(lat)>90||Math.abs(lng)>180) return null;
+  return [lat,lng];
 }
 
 function shape(rows){
-  const head = rows[1] || [];
+  const coordRow = rows[0] || [], head = rows[1] || [];
   const tasks = [];
   for(let c=T_FIRST;c<=T_LAST;c++){
-    const raw = (head[c]||'').trim();
-    if(!raw) continue;
-    const sp = raw.indexOf(' ');
-    tasks.push({col:c, code: sp<0 ? raw : raw.slice(0,sp), name: sp<0 ? raw : raw.slice(sp+1)});
+    const raw=(head[c]||'').trim(); if(!raw) continue;
+    const sp=raw.indexOf(' ');
+    tasks.push({col:c, code: sp<0?raw:raw.slice(0,sp), name: sp<0?raw:raw.slice(sp+1),
+                pos: parseLatLng(coordRow[c])});
   }
-  const teams = [];
+  const teams=[];
   for(let r=2;r<rows.length;r++){
-    const row = rows[r]; if(!row) continue;
-    const nr = (row[0]||'').trim();
+    const row=rows[r]; if(!row) continue;
+    const nr=(row[0]||'').trim();
     if(!/^\d+$/.test(nr)) continue;
-    const scores = {};
-    let done = 0;
-    tasks.forEach(t=>{
-      const v = cellNum(row[t.col]);
-      scores[t.col] = v;
-      if(v !== null) done++;
-    });
-    teams.push({
-      nr:+nr,
-      name:(row[1]||'').trim() || ('Komanda Nr.'+nr),
-      scores, done,
-      penalty: cellNum(row[I_PEN]) || 0,
-      total: cellNum(row[I_TOTAL]),
-      place: cellNum(row[I_PLACE])
-    });
+    const scores={}; let done=0;
+    tasks.forEach(t=>{ const v=cellNum(row[t.col]); scores[t.col]=v; if(v!==null) done++; });
+    teams.push({nr:+nr, name:(row[1]||'').trim()||('Komanda Nr.'+nr), scores, done,
+      penalty:cellNum(row[I_PEN])||0, total:cellNum(row[I_TOTAL]), place:cellNum(row[I_PLACE])});
   }
-  tasks.forEach(t=>{
-    t.visited = teams.filter(x=>x.scores[t.col] !== null).length;
-  });
+  tasks.forEach(t=>{ t.visited = teams.filter(x=>x.scores[t.col]!==null).length; });
   return {tasks, teams};
 }
 
-let DATA = null, view = 'total';
-const $ = s=>document.querySelector(s);
-const el = (t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!==undefined)e.innerHTML=h; return e;};
-const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const plural = (n,one,few)=> n===1 ? one : few;
-
+let DATA=null, view='total';
+const $=s=>document.querySelector(s);
+const el=(t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!==undefined)e.innerHTML=h; return e;};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const plural=(n,one,few)=> n===1?one:few;
 function fmtAgo(ts){
-  const s = Math.round((Date.now()-ts)/1000);
-  if(s<60) return 'pirms ' + s + ' s';
-  const m = Math.round(s/60);
-  if(m<60) return 'pirms ' + m + ' min';
-  return 'pirms ' + Math.round(m/60) + ' h';
+  const s=Math.round((Date.now()-ts)/1000);
+  if(s<60) return 'pirms '+s+' s';
+  const m=Math.round(s/60);
+  return m<60 ? 'pirms '+m+' min' : 'pirms '+Math.round(m/60)+' h';
 }
 
 function renderTotal(list){
-  const nT = DATA.tasks.length;
-  const ranked = DATA.teams.filter(t=>t.total !== null)
-    .map(t=>({t, val:t.total, place:t.place}))
-    .sort((a,b)=> (b.val-a.val) || (a.t.nr-b.t.nr));
+  const nT=DATA.tasks.length;
+  const ranked=DATA.teams.filter(t=>t.total!==null).map(t=>({t,val:t.total,place:t.place}))
+    .sort((a,b)=>(b.val-a.val)||(a.t.nr-b.t.nr));
   if(!ranked.length){ list.appendChild(el('div','empty','Vēl nav neviena rezultāta.')); return; }
-  const max = Math.max(...ranked.map(r=>r.val), 1);
+  const max=Math.max(...ranked.map(r=>r.val),1);
   ranked.forEach(r=>{
-    const p = r.place;
-    const b = el('button','row' + (p && p<=3 ? ' p'+p : ''));
-    b.innerHTML =
-      '<span class="place">'+(p||'–')+'</span>'+
-      '<span class="who">'+
-        '<span class="nm">'+esc(r.t.name)+'</span>'+
-        '<span class="sub">Nr.&nbsp;'+r.t.nr+' &nbsp;·&nbsp; '+r.t.done+' no '+nT+' uzdevumiem'+
-          (r.t.penalty ? ' &nbsp;·&nbsp; sods −'+r.t.penalty : '')+'</span>'+
-        '<span class="bar"><i style="width:'+Math.max(3, r.val/max*100)+'%"></i></span>'+
-      '</span>'+
+    const p=r.place, b=el('button','row'+(p&&p<=3?' p'+p:''));
+    b.innerHTML='<span class="place">'+(p||'–')+'</span>'+
+      '<span class="who"><span class="nm">'+esc(r.t.name)+'</span>'+
+      '<span class="sub">Nr.&nbsp;'+r.t.nr+' &nbsp;·&nbsp; '+r.t.done+' no '+nT+' uzdevumiem'+
+        (r.t.penalty?' &nbsp;·&nbsp; sods −'+r.t.penalty:'')+'</span>'+
+      '<span class="bar"><i style="width:'+Math.max(3,r.val/max*100)+'%"></i></span></span>'+
       '<span class="pts"><b>'+r.val+'</b><small>PUNKTI</small></span>';
-    b.onclick = ()=>openTeam(r.t);
+    b.onclick=()=>openTeam(r.t);
     list.appendChild(b);
   });
 }
 
 function renderTasks(list){
-  const nTeams = DATA.teams.length;
+  const n=DATA.teams.length;
   DATA.tasks.forEach(t=>{
-    const d = el('div','row');
-    d.innerHTML =
-      '<span class="code">'+esc(t.code)+'</span>'+
-      '<span class="who">'+
-        '<span class="nm">'+esc(t.name)+'</span>'+
-        '<span class="sub">'+t.visited+' no '+nTeams+' '+plural(t.visited,'komanda','komandām')+' apmeklējušas</span>'+
-        '<span class="bar"><i style="width:'+(nTeams? t.visited/nTeams*100 : 0)+'%"></i></span>'+
-      '</span>'+
+    const d=el('div','row');
+    d.innerHTML='<span class="code">'+esc(t.code)+'</span>'+
+      '<span class="who"><span class="nm">'+esc(t.name)+'</span>'+
+      '<span class="sub">'+t.visited+' no '+n+' '+plural(t.visited,'komanda','komandām')+' apmeklējušas</span>'+
+      '<span class="bar"><i style="width:'+(n?t.visited/n*100:0)+'%"></i></span></span>'+
       '<span class="pts"><b>'+t.visited+'</b><small>KOMANDAS</small></span>';
     list.appendChild(d);
   });
 }
 
 function render(){
-  const list = $('#list'); list.innerHTML='';
-  if(!DATA || !DATA.teams.length){ list.appendChild(el('div','empty','Nav datu.')); return; }
-  if(view === 'total') renderTotal(list); else renderTasks(list);
+  const list=$('#list');
+  $('#mapwrap').hidden = view!=='map';
+  list.hidden = view==='map';
+  if(view==='map'){ initMap(); return; }
+  list.innerHTML='';
+  if(!DATA||!DATA.teams.length){ list.appendChild(el('div','empty','Nav datu.')); return; }
+  view==='total' ? renderTotal(list) : renderTasks(list);
 }
 
 function openTeam(t){
-  const nT = DATA.tasks.length;
-  $('#dName').textContent = t.name;
-  $('#dSub').textContent = 'Nr. ' + t.nr + ' · ' + t.done + ' no ' + nT + ' uzdevumiem'
-      + (t.penalty ? ' · sods −' + t.penalty : '');
-  $('#dPts').textContent = t.total === null ? '–' : t.total;
-  $('#dPlace').textContent = t.place === null ? '–' : t.place;
-  const box = $('#dTasks'); box.innerHTML='';
+  const nT=DATA.tasks.length;
+  $('#dName').textContent=t.name;
+  $('#dSub').textContent='Nr. '+t.nr+' · '+t.done+' no '+nT+' uzdevumiem'+(t.penalty?' · sods −'+t.penalty:'');
+  $('#dPts').textContent=t.total===null?'–':t.total;
+  $('#dPlace').textContent=t.place===null?'–':t.place;
+  const box=$('#dTasks'); box.innerHTML='';
   DATA.tasks.forEach(task=>{
-    const v = t.scores[task.col];
-    const line = el('div','tline' + (v===null?' none':''));
-    line.innerHTML = '<span class="tag">'+esc(task.code)+'</span>'+
+    const v=t.scores[task.col];
+    const line=el('div','tline'+(v===null?' none':''));
+    line.innerHTML='<span class="tag">'+esc(task.code)+'</span>'+
       '<span class="tname">'+esc(task.name)+'</span>'+
-      '<span class="tval">'+(v===null ? '—' : v + ' p')+'</span>';
+      '<span class="tval">'+(v===null?'—':v+' p')+'</span>';
     box.appendChild(line);
   });
   $('#sheet').classList.add('on');
 }
 
 function setStatus(ts, ok){
-  const dot = $('#dot');
-  dot.className = 'dot' + (!ok ? ' off' : (Date.now()-ts > 3*REFRESH_MS ? ' stale' : ''));
-  $('#stamp').textContent = ok ? fmtAgo(ts) : 'nav savienojuma';
-  $('#foot').textContent = 'Atjaunojas automātiski ik 30 sekundes.';
+  $('#dot').className='dot'+(!ok?' off':(Date.now()-ts>3*REFRESH_MS?' stale':''));
+  $('#stamp').textContent=ok?fmtAgo(ts):'nav savienojuma';
+  $('#foot').textContent='Atjaunojas automātiski ik 30 sekundes.';
 }
 
 async function load(){
   try{
-    const res = await fetch(SRC + '&t=' + Date.now(), {cache:'no-store'});
+    const res=await fetch(SRC+'&t='+Date.now(),{cache:'no-store'});
     if(!res.ok) throw new Error(res.status);
-    const text = await res.text();
-    DATA = shape(parseCSV(text));
-    const stamp = Date.now();
-    try{ localStorage.setItem(CACHE_KEY, JSON.stringify({stamp, text})); }catch(e){}
-    render(); setStatus(stamp, true);
+    const text=await res.text();
+    DATA=shape(parseCSV(text));
+    const stamp=Date.now();
+    try{ localStorage.setItem(CACHE_KEY,JSON.stringify({stamp,text})); }catch(e){}
+    render(); if(MAP) drawPins(); setStatus(stamp,true);
   }catch(e){
     try{
-      const c = JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
-      if(c){ DATA = shape(parseCSV(c.text)); render(); setStatus(c.stamp, false); return; }
+      const c=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
+      if(c){ DATA=shape(parseCSV(c.text)); render(); setStatus(c.stamp,false); return; }
     }catch(_){}
-    setStatus(Date.now(), false);
-    if(!DATA) $('#list').innerHTML = '<div class="empty">Nevar ielādēt rezultātus.<br>Pārbaudi interneta savienojumu.</div>';
+    setStatus(Date.now(),false);
+    if(!DATA) $('#list').innerHTML='<div class="empty">Nevar ielādēt rezultātus.<br>Pārbaudi interneta savienojumu.</div>';
   }
 }
 
-$('#tab-total').onclick = ()=>{ view='total'; $('#tab-total').ariaSelected='true'; $('#tab-task').ariaSelected='false'; render(); };
-$('#tab-task').onclick  = ()=>{ view='task';  $('#tab-total').ariaSelected='false'; $('#tab-task').ariaSelected='true'; render(); };
-$('#btnRefresh').onclick = load;
-$('#sheet').addEventListener('click', e=>{ if(e.target.dataset.close!==undefined) $('#sheet').classList.remove('on'); });
-document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) load(); });
+/* ---------------- map ---------------- */
+let MAP=null, PINS=null, MEDOT=null, MERING=null, WATCH=null, LEAFLET_LOADING=false;
+
+function loadLeaflet(){
+  return new Promise((ok,fail)=>{
+    if(window.L) return ok();
+    if(LEAFLET_LOADING) return setTimeout(()=>loadLeaflet().then(ok,fail),200);
+    LEAFLET_LOADING=true;
+    const css=document.createElement('link');
+    css.rel='stylesheet'; css.href='https://unpkg.com/leaflet@1.9.4/dist/leaflet.css';
+    document.head.appendChild(css);
+    const s=document.createElement('script');
+    s.src='https://unpkg.com/leaflet@1.9.4/dist/leaflet.js';
+    s.onload=()=>ok(); s.onerror=()=>fail(new Error('leaflet'));
+    document.head.appendChild(s);
+  });
+}
+
+async function initMap(){
+  if(MAP){ setTimeout(()=>MAP.invalidateSize(),60); return; }
+  try{ await loadLeaflet(); }
+  catch(e){ $('#mapNote').textContent='Karti nevar ielādēt — nav interneta savienojuma.'; return; }
+  MAP=L.map('map',{zoomControl:true,attributionControl:true}).setView([57.2300,25.0400],14);
+  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(MAP);
+  PINS=L.layerGroup().addTo(MAP);
+  drawPins(); fitPins();
+  setTimeout(()=>MAP.invalidateSize(),60);
+}
+
+function drawPins(){
+  if(!MAP||!DATA) return;
+  PINS.clearLayers();
+  DATA.tasks.forEach(t=>{
+    if(!t.pos) return;
+    const icon=L.divIcon({className:'', html:'<div class="pin">'+esc(t.code)+'</div>',
+      iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-16]});
+    L.marker(t.pos,{icon}).addTo(PINS)
+      .bindPopup('<b>'+esc(t.code)+' · '+esc(t.name)+'</b><br>'+t.visited+' no '+DATA.teams.length+' komandām jau bijušas');
+  });
+  const n=DATA.tasks.filter(t=>t.pos).length;
+  $('#mapNote').textContent = n
+    ? n+' no '+DATA.tasks.length+' uzdevumiem ir koordinātes. Atļauj atrašanās vietu, lai redzētu sevi.'
+    : 'Nevienam uzdevumam vēl nav koordinātu (KOPVĒRTĒJUMS 1. rinda).';
+}
+
+function fitPins(){
+  const pts=DATA?DATA.tasks.filter(t=>t.pos).map(t=>t.pos):[];
+  if(MAP&&pts.length) MAP.fitBounds(L.latLngBounds(pts).pad(0.25));
+}
+
+function locate(){
+  if(!navigator.geolocation){ $('#mapNote').textContent='Šī ierīce neatbalsta atrašanās vietu.'; return; }
+  const btn=$('#btnLocate');
+  if(WATCH!==null){
+    navigator.geolocation.clearWatch(WATCH); WATCH=null;
+    btn.classList.remove('on'); btn.textContent='Rādīt, kur es esmu';
+    if(MEDOT){ MAP.removeLayer(MEDOT); MEDOT=null; }
+    if(MERING){ MAP.removeLayer(MERING); MERING=null; }
+    return;
+  }
+  btn.textContent='Meklē…';
+  WATCH=navigator.geolocation.watchPosition(p=>{
+    const ll=[p.coords.latitude,p.coords.longitude], acc=p.coords.accuracy||0;
+    if(!MEDOT){
+      MEDOT=L.marker(ll,{icon:L.divIcon({className:'',html:'<div class="me"></div>',iconSize:[18,18],iconAnchor:[9,9]}),
+        zIndexOffset:1000}).addTo(MAP);
+      MERING=L.circle(ll,{radius:acc,color:'#2E7CB8',weight:1,fillColor:'#2E7CB8',fillOpacity:.12}).addTo(MAP);
+      MAP.setView(ll,16);
+    } else { MEDOT.setLatLng(ll); MERING.setLatLng(ll).setRadius(acc); }
+    btn.classList.add('on'); btn.textContent='Seko man · izslēgt';
+    $('#mapNote').textContent='Tava atrašanās vieta, precizitāte ±'+Math.round(acc)+' m.';
+  }, err=>{
+    WATCH=null; btn.classList.remove('on'); btn.textContent='Rādīt, kur es esmu';
+    $('#mapNote').textContent = err.code===1
+      ? 'Atrašanās vieta liegta. Atļauj to pārlūka iestatījumos.'
+      : 'Nevar noteikt atrašanās vietu. Pamēģini ārā zem klajas debess.';
+  }, {enableHighAccuracy:true, maximumAge:5000, timeout:20000});
+}
+
+function tab(which){
+  view=which;
+  ['total','task','map'].forEach(k=> $('#tab-'+k).ariaSelected = String(k===which));
+  render();
+}
+$('#tab-total').onclick=()=>tab('total');
+$('#tab-task').onclick =()=>tab('task');
+$('#tab-map').onclick  =()=>tab('map');
+$('#btnRefresh').onclick=load;
+$('#btnLocate').onclick=locate;
+$('#btnFit').onclick=fitPins;
+$('#sheet').addEventListener('click',e=>{ if(e.target.dataset.close!==undefined) $('#sheet').classList.remove('on'); });
+document.addEventListener('visibilitychange',()=>{ if(!document.hidden) load(); });
 
 load();
 setInterval(load, REFRESH_MS);

@@ -41,3 +41,19 @@ Top of the `<script>` block in `index.html`:
 
 Task names come from row 2, so renaming a task in the master updates the page.
 Adding or removing a task column shifts the last four — update the constants.
+
+## Karte (map tab)
+Coordinates live in **row 1 of KOPVĒRTĒJUMS**, one cell per task column (C1:W1),
+written as `lat,lng` — e.g. `57.2318,25.0389`. They ride along in the same CSV,
+so no extra request and no second file.
+
+- A task with no coordinate simply does not appear on the map. Nothing breaks.
+- Right now those are MOCK coordinates around Līgatne village, ~1.5 x 1.1 km.
+  Replace them with the real ones in the sheet; the page picks them up on the
+  next 30-second refresh.
+- Map tiles come from OpenStreetMap and Leaflet loads from unpkg, both only when
+  the Karte tab is first opened. No internet -> the tab says so, the rest of the
+  page still works.
+- "Rādīt, kur es esmu" uses the browser's own location. It needs HTTPS, which
+  GitHub Pages gives you (localhost also counts). Nothing is uploaded anywhere —
+  the position stays in the phone and is drawn locally. No other team sees it.
