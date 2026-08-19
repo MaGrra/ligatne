@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="lv">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#14532d">
+<title>Rezultāti · Līgatne</title>
+<style>
+:root{
+  --bg:#f4f6f4; --card:#fff; --ink:#12181a; --muted:#6b7a72; --line:#e3e8e4;
+  --brand:#14532d; --brand2:#2f7a4a; --accent:#e8a020;
+  --g1:#d4a017; --g2:#9aa5ad; --g3:#b3743a;
+  --shadow:0 1px 2px rgba(0,0,0,.05),0 8px 24px -12px rgba(0,0,0,.18);
+}
+@media (prefers-color-scheme:dark){
+  :root{--bg:#0e1512;--card:#16201c;--ink:#eaf0ec;--muted:#93a49b;--line:#243029;
+        --brand:#1d6b3c;--brand2:#3d9960;--shadow:0 1px 2px rgba(0,0,0,.4),0 8px 24px -12px rgba(0,0,0,.6);}
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--bg);color:var(--ink);
+  font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+header{
+  position:sticky;top:0;z-index:20;
+  background:linear-gradient(160deg,var(--brand),var(--brand2));
+  color:#fff;padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;
+  box-shadow:0 2px 12px rgba(0,0,0,.18);
+}
+.h-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em}
+.status{display:flex;align-items:center;gap:6px;font-size:12px;opacity:.9;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:#7ef2a8;box-shadow:0 0 0 0 rgba(126,242,168,.7);animation:pulse 2.4s infinite}
+.dot.stale{background:#ffce5c;animation:none}
+.dot.off{background:#ff8b78;animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(126,242,168,.6)}70%{box-shadow:0 0 0 7px rgba(126,242,168,0)}100%{box-shadow:0 0 0 0 rgba(126,242,168,0)}}
+nav{display:flex;gap:6px;margin-top:12px}
+nav button{
+  flex:1;appearance:none;border:0;border-radius:999px;padding:9px 6px;
+  font:inherit;font-size:14px;font-weight:600;cursor:pointer;
+  background:rgba(255,255,255,.16);color:#fff;transition:background .15s;
+}
+nav button[aria-selected=true]{background:#fff;color:var(--brand)}
+main{padding:14px 12px 32px;max-width:640px;margin:0 auto}
+.picker{width:100%;padding:12px 14px;font:inherit;font-weight:600;border:1px solid var(--line);
+  border-radius:12px;background:var(--card);color:var(--ink);margin-bottom:12px;box-shadow:var(--shadow)}
+.list{display:flex;flex-direction:column;gap:8px}
+.row{
+  display:flex;align-items:center;gap:12px;background:var(--card);
+  border:1px solid var(--line);border-left:4px solid transparent;
+  border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);
+  text-align:left;font:inherit;color:inherit;width:100%;cursor:pointer;
+  transition:transform .08s;
+}
+.row:active{transform:scale(.985)}
+.row.p1{border-left-color:var(--g1)} .row.p2{border-left-color:var(--g2)} .row.p3{border-left-color:var(--g3)}
+.place{
+  flex:0 0 34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:15px;background:var(--bg);color:var(--muted);font-variant-numeric:tabular-nums;
+}
+.p1 .place{background:var(--g1);color:#3b2c00} .p2 .place{background:var(--g2);color:#1f262b} .p3 .place{background:var(--g3);color:#301a08}
+.who{flex:1;min-width:0}
+.nm{font-weight:650;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sub{font-size:12.5px;color:var(--muted);margin-top:1px}
+.pts{font-weight:800;font-size:19px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.pts small{font-size:11px;font-weight:600;color:var(--muted);display:block;text-align:right;letter-spacing:0}
+.empty{text-align:center;color:var(--muted);padding:36px 16px;font-size:15px}
+.bar{height:3px;border-radius:2px;background:var(--line);margin-top:6px;overflow:hidden}
+.bar i{display:block;height:100%;background:var(--brand2)}
+.sheet{position:fixed;inset:0;z-index:40;display:none}
+.sheet.on{display:block}
+.scrim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
+.panel{
+  position:absolute;left:0;right:0;bottom:0;max-height:88vh;overflow:auto;
+  background:var(--bg);border-radius:20px 20px 0 0;padding:8px 12px calc(24px + env(safe-area-inset-bottom));
+  animation:up .22s ease-out;
+}
+@keyframes up{from{transform:translateY(16px);opacity:.6}to{transform:none;opacity:1}}
+.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:8px auto 12px}
+.phead{display:flex;align-items:center;gap:12px;padding:0 4px 12px}
+.phead .big{font-size:26px;font-weight:800;letter-spacing:-.02em}
+.tline{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;
+  background:var(--card);border:1px solid var(--line);border-radius:11px;margin-bottom:6px}
+.tline.none{opacity:.5}
+.tname{font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tval{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tag{font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--bg);color:var(--muted)}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 12px 28px}
+.refresh{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--muted);
+  font:inherit;font-size:13px;padding:8px 14px;border-radius:999px;cursor:pointer}
+</style>
+</head>
+<body>
+<header>
+  <div class="h-top">
+    <h1>Rezultāti</h1>
+    <div class="status"><span class="dot" id="dot"></span><span id="stamp">ielādē…</span></div>
+  </div>
+  <nav role="tablist">
+    <button role="tab" id="tab-total" aria-selected="true">Kopvērtējums</button>
+    <button role="tab" id="tab-task" aria-selected="false">Uzdevumi</button>
+  </nav>
+</header>
+
+<main>
+  <select class="picker" id="taskPick" hidden></select>
+  <div class="list" id="list"><div class="empty">Ielādē rezultātus…</div></div>
+  <footer>
+    <button class="refresh" id="btnRefresh">Atjaunot tagad</button>
+    <div id="foot" style="margin-top:10px"></div>
+  </footer>
+</main>
+
+<div class="sheet" id="sheet">
+  <div class="scrim" data-close></div>
+  <div class="panel">
+    <div class="grab"></div>
+    <div class="phead">
+      <div class="place" id="dPlace">–</div>
+      <div style="flex:1;min-width:0">
+        <div class="nm" id="dName" style="font-size:18px"></div>
+        <div class="sub" id="dSub"></div>
+      </div>
+      <div class="big" id="dPts">0</div>
+    </div>
+    <div id="dTasks"></div>
+  </div>
+</div>
+
+<script>
+const SHEET_ID = '1yNf7ao3RczgtD4VqRvhtDAxhlYWqI5p2SeWMpV6Mn3E';
+const GID = '813088766';
+const URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID;
+const REFRESH_MS = 30000;
+const CACHE_KEY = 'ligatne-results-v1';
+
+function parseCSV(text){
+  const rows=[]; let row=[], field='', q=false;
+  for(let i=0;i<text.length;i++){
+    const c=text[i];
+    if(q){
+      if(c === '"'){ if(text[i+1] === '"'){ field+='"'; i++; } else q=false; }
+      else field+=c;
+    } else if(c === '"'){ q=true; }
+    else if(c === ','){ row.push(field); field=''; }
+    else if(c === '\n'){ row.push(field); rows.push(row); row=[]; field=''; }
+    else if(c !== '\r'){ field+=c; }
+  }
+  if(field.length || row.length){ row.push(field); rows.push(row); }
+  return rows;
+}
+
+const T_FIRST = 2, T_LAST = 22, I_PEN = 23, I_TOTAL = 24, I_PLACE = 25, I_DONE = 26;
+
+function shape(rows){
+  const head = rows[1] || [];
+  const tasks = [];
+  for(let c=T_FIRST;c<=T_LAST;c++){
+    const raw = (head[c]||'').trim();
+    if(raw) tasks.push({col:c, code:raw.split(' ')[0], name:raw.replace(/^\S+\s*/,'') || raw});
+  }
+  const teams = [];
+  for(let r=2;r<rows.length;r++){
+    const row = rows[r]; if(!row) continue;
+    const nr = (row[0]||'').trim();
+    if(!nr || !/^\d+$/.test(nr)) continue;
+    const scores = {};
+    tasks.forEach(t=>{
+      const v = (row[t.col]||'').trim();
+      scores[t.col] = v === '' ? null : (isNaN(parseFloat(v)) ? null : parseFloat(v));
+    });
+    teams.push({
+      nr:+nr,
+      name:(row[1]||'').trim() || ('Komanda Nr.'+nr),
+      scores,
+      penalty: parseFloat(row[I_PEN]) || 0,
+      total: parseFloat(row[I_TOTAL]),
+      place: parseFloat(row[I_PLACE]),
+      done: parseFloat(row[I_DONE]) || 0
+    });
+  }
+  return {tasks, teams};
+}
+
+function rank(list, get){
+  const vals = list.map(get);
+  return list.map((x,i)=>{
+    const v = vals[i];
+    if(v === null || isNaN(v)) return {item:x, val:null, place:null};
+    return {item:x, val:v, place: vals.filter(o=>o!==null && !isNaN(o) && o>v).length + 1};
+  });
+}
+
+let DATA = null, view = 'total', taskIdx = 0;
+const $ = s=>document.querySelector(s);
+const el = (t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!==undefined)e.innerHTML=h; return e;};
+const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+
+function fmtAgo(ts){
+  const s = Math.round((Date.now()-ts)/1000);
+  if(s<60) return 'pirms ' + s + ' s';
+  const m = Math.round(s/60);
+  if(m<60) return 'pirms ' + m + ' min';
+  return 'pirms ' + Math.round(m/60) + ' h';
+}
+
+function render(){
+  const list = $('#list'); list.innerHTML='';
+  if(!DATA || !DATA.teams.length){ list.appendChild(el('div','empty','Nav datu.')); return; }
+  $('#taskPick').hidden = view !== 'task';
+
+  let ranked, maxVal, sub;
+  if(view === 'total'){
+    ranked = DATA.teams.filter(t=>!isNaN(t.total)).map(t=>({item:t,val:t.total,place:t.place}));
+    sub = t=>t.done + ' no ' + DATA.tasks.length + ' uzd.';
+  } else {
+    const task = DATA.tasks[taskIdx];
+    ranked = rank(DATA.teams, t=>t.scores[task.col]).filter(x=>x.val!==null);
+    sub = ()=>task.code + ' · ' + task.name;
+  }
+  ranked.sort((a,b)=> (b.val-a.val) || (a.item.nr-b.item.nr));
+  maxVal = ranked.length ? Math.max(...ranked.map(r=>r.val)) : 0;
+
+  if(!ranked.length){ list.appendChild(el('div','empty','Šim uzdevumam vēl nav rezultātu.')); return; }
+
+  ranked.forEach(r=>{
+    const p = r.place;
+    const b = el('button','row' + (p<=3 ? ' p'+p : ''));
+    b.innerHTML =
+      '<span class="place">'+(p||'–')+'</span>'+
+      '<span class="who"><span class="nm">'+esc(r.item.name)+'</span>'+
+        '<span class="sub">Nr. '+r.item.nr+' · '+esc(sub(r.item))+'</span>'+
+        '<span class="bar"><i style="width:'+(maxVal>0?Math.max(3,r.val/maxVal*100):0)+'%"></i></span>'+
+      '</span>'+
+      '<span class="pts">'+r.val+'<small>punkti</small></span>';
+    b.onclick = ()=>openTeam(r.item);
+    list.appendChild(b);
+  });
+}
+
+function openTeam(t){
+  $('#dName').textContent = t.name;
+  $('#dSub').textContent = 'Nr. ' + t.nr + ' · ' + t.done + ' no ' + DATA.tasks.length + ' uzdevumiem'
+      + (t.penalty ? ' · sods −' + t.penalty : '');
+  $('#dPts').textContent = isNaN(t.total) ? '–' : t.total;
+  $('#dPlace').textContent = isNaN(t.place) ? '–' : t.place;
+  const box = $('#dTasks'); box.innerHTML='';
+  DATA.tasks.forEach(task=>{
+    const v = t.scores[task.col];
+    const line = el('div','tline' + (v===null?' none':''));
+    line.innerHTML = '<span class="tag">'+esc(task.code)+'</span>'+
+      '<span class="tname" style="flex:1">'+esc(task.name)+'</span>'+
+      '<span class="tval">'+(v===null?'—':v)+'</span>';
+    box.appendChild(line);
+  });
+  $('#sheet').classList.add('on');
+}
+
+function setStatus(ts, ok){
+  const dot = $('#dot');
+  dot.className = 'dot' + (!ok ? ' off' : (Date.now()-ts > 3*REFRESH_MS ? ' stale' : ''));
+  $('#stamp').textContent = ok ? fmtAgo(ts) : 'nav savienojuma';
+  $('#foot').textContent = 'Atjaunojas automātiski ik 30 sekundes.';
+}
+
+async function load(){
+  try{
+    const res = await fetch(URL + '&t=' + Date.now(), {cache:'no-store'});
+    if(!res.ok) throw new Error(res.status);
+    const text = await res.text();
+    DATA = shape(parseCSV(text));
+    const stamp = Date.now();
+    try{ localStorage.setItem(CACHE_KEY, JSON.stringify({stamp, text})); }catch(e){}
+    buildPicker(); render(); setStatus(stamp, true);
+  }catch(e){
+    try{
+      const c = JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
+      if(c){ DATA = shape(parseCSV(c.text)); buildPicker(); render(); setStatus(c.stamp, false); return; }
+    }catch(_){}
+    setStatus(Date.now(), false);
+    if(!DATA) $('#list').innerHTML = '<div class="empty">Nevar ielādēt rezultātus.<br>Pārbaudi interneta savienojumu.</div>';
+  }
+}
+
+let pickerBuilt = false;
+function buildPicker(){
+  if(pickerBuilt || !DATA) return;
+  const p = $('#taskPick');
+  DATA.tasks.forEach((t,i)=> p.options[i] = new Option(t.code + ' · ' + t.name, i));
+  p.onchange = ()=>{ taskIdx = +p.value; render(); };
+  pickerBuilt = true;
+}
+
+$('#tab-total').onclick = ()=>{ view='total'; $('#tab-total').ariaSelected='true'; $('#tab-task').ariaSelected='false'; render(); };
+$('#tab-task').onclick  = ()=>{ view='task';  $('#tab-total').ariaSelected='false'; $('#tab-task').ariaSelected='true'; render(); };
+$('#btnRefresh').onclick = load;
+$('#sheet').addEventListener('click', e=>{ if(e.target.dataset.close!==undefined) $('#sheet').classList.remove('on'); });
+document.addEventListener('visibilitychange', ()=>{ if(!document.hidden) load(); });
+
+load();
+setInterval(load, REFRESH_MS);
+</script>
+</body>
+</html>
