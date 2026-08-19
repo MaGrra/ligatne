@@ -13,10 +13,24 @@ Refreshes every 30 s, and again whenever the phone comes back to the tab.
 Last good response is kept in localStorage, so a dropout shows stale data with an
 amber dot instead of an empty screen.
 
-## Requirements
-The master must be shared **"Anyone with the link → Viewer"**. Publish-to-web does
-NOT work here — the aerones.com Workspace blocks publishing outside the domain
-(returns 401 anonymously). Link-sharing does work and was verified.
+## Requirements — READ THIS
+The page reads a **values-only public mirror**, NOT the master.
+
+    REZULTĀTI (publiskais)  1L3Jw8csMEK3-du2xkBMA8yg6e32TWALuC7zG4d6FQHc  tab DATI
+
+Why: the master's cells contain IMPORTRANGE formulas naming all 21 task file ids,
+and those task files are deliberately "anyone with the link can EDIT" so referees
+need no Google account. Publishing the master id would therefore have handed any
+visitor a route to edit live scores. The mirror holds display values only — no
+formulas, no file ids — and the master is private again (verified: anonymous read
+returns 401).
+
+`mirrorPublic()` in the Loquiz Apps Script copies `A1:AD60` into the mirror after
+every sync, so it is never more than a minute behind. Sheet errors (`#REF!` etc.)
+are blanked on the way across.
+
+Publish-to-web does not work at all here: the aerones.com Workspace blocks
+publishing outside the domain (401 anonymously). Plain link-sharing does work.
 
 ## Publishing to GitHub Pages
 1. Create a repo, push `index.html` to the default branch.
