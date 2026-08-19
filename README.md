@@ -57,3 +57,18 @@ so no extra request and no second file.
 - "Rādīt, kur es esmu" uses the browser's own location. It needs HTTPS, which
   GitHub Pages gives you (localhost also counts). Nothing is uploaded anywhere —
   the position stays in the phone and is drawn locally. No other team sees it.
+
+## Beigu laiks (cutoff)
+Cell **`AD1` in KOPVĒRTĒJUMS** (label sits in `AC1`). Format `YYYY-MM-DD HH:MM`,
+read as local Riga time. The cell's number format is pinned to `yyyy-mm-dd hh:mm`
+so the CSV export always looks the same — do not change that format.
+
+- Before the time: a live countdown sits under the tabs. It turns amber under
+  15 minutes and red under 5.
+- At the time: the whole page flips to "Rezultāti vairs nav pieejami · Tiekamies
+  finišā!". Tabs, footer and countdown disappear.
+- Empty cell = no cutoff, results stay visible forever.
+- The page keeps polling after closing, so pushing the time out in the sheet
+  brings the results back within 30 seconds. Same for pulling it in early.
+- The clock is the phone's own. A phone with a badly wrong clock will flip at the
+  wrong moment; nothing we can do from a static page.
