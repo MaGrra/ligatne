@@ -30,46 +30,60 @@ header{
   color:#fff;padding:calc(env(safe-area-inset-top) + 14px) 16px 12px;
   box-shadow:0 2px 12px rgba(0,0,0,.18);
 }
-.h-top{display:flex;align-items:baseline;justify-content:space-between;gap:8px}
+.h-top{display:flex;align-items:baseline;justify-content:space-between;gap:10px}
 h1{margin:0;font-size:20px;font-weight:700;letter-spacing:-.01em}
-.status{display:flex;align-items:center;gap:6px;font-size:12px;opacity:.9;white-space:nowrap}
-.dot{width:7px;height:7px;border-radius:50%;background:#7ef2a8;box-shadow:0 0 0 0 rgba(126,242,168,.7);animation:pulse 2.4s infinite}
+.status{display:flex;align-items:center;gap:6px;font-size:12px;opacity:.92;white-space:nowrap}
+.dot{width:7px;height:7px;border-radius:50%;background:#7ef2a8;animation:pulse 2.4s infinite}
 .dot.stale{background:#ffce5c;animation:none}
 .dot.off{background:#ff8b78;animation:none}
 @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(126,242,168,.6)}70%{box-shadow:0 0 0 7px rgba(126,242,168,0)}100%{box-shadow:0 0 0 0 rgba(126,242,168,0)}}
-nav{display:flex;gap:6px;margin-top:12px}
+nav{display:flex;gap:6px;margin-top:14px}
 nav button{
-  flex:1;appearance:none;border:0;border-radius:999px;padding:9px 6px;
+  flex:1;appearance:none;border:0;border-radius:999px;padding:10px 6px;
   font:inherit;font-size:14px;font-weight:600;cursor:pointer;
   background:rgba(255,255,255,.16);color:#fff;transition:background .15s;
 }
 nav button[aria-selected=true]{background:#fff;color:var(--brand)}
 main{padding:14px 12px 32px;max-width:640px;margin:0 auto}
-.picker{width:100%;padding:12px 14px;font:inherit;font-weight:600;border:1px solid var(--line);
-  border-radius:12px;background:var(--card);color:var(--ink);margin-bottom:12px;box-shadow:var(--shadow)}
-.list{display:flex;flex-direction:column;gap:8px}
+.list{display:flex;flex-direction:column;gap:10px}
+
 .row{
-  display:flex;align-items:center;gap:12px;background:var(--card);
+  display:flex;align-items:center;gap:14px;background:var(--card);
   border:1px solid var(--line);border-left:4px solid transparent;
-  border-radius:14px;padding:12px 14px;box-shadow:var(--shadow);
-  text-align:left;font:inherit;color:inherit;width:100%;cursor:pointer;
+  border-radius:14px;padding:14px 15px;box-shadow:var(--shadow);
+  text-align:left;font:inherit;color:inherit;width:100%;
   transition:transform .08s;
 }
-.row:active{transform:scale(.985)}
+button.row{cursor:pointer}
+button.row:active{transform:scale(.985)}
 .row.p1{border-left-color:var(--g1)} .row.p2{border-left-color:var(--g2)} .row.p3{border-left-color:var(--g3)}
 .place{
-  flex:0 0 34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;
+  flex:0 0 36px;height:36px;border-radius:11px;display:flex;align-items:center;justify-content:center;
   font-weight:800;font-size:15px;background:var(--bg);color:var(--muted);font-variant-numeric:tabular-nums;
 }
 .p1 .place{background:var(--g1);color:#3b2c00} .p2 .place{background:var(--g2);color:#1f262b} .p3 .place{background:var(--g3);color:#301a08}
-.who{flex:1;min-width:0}
-.nm{font-weight:650;font-size:16px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.sub{font-size:12.5px;color:var(--muted);margin-top:1px}
-.pts{font-weight:800;font-size:19px;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
-.pts small{font-size:11px;font-weight:600;color:var(--muted);display:block;text-align:right;letter-spacing:0}
-.empty{text-align:center;color:var(--muted);padding:36px 16px;font-size:15px}
-.bar{height:3px;border-radius:2px;background:var(--line);margin-top:6px;overflow:hidden}
-.bar i{display:block;height:100%;background:var(--brand2)}
+.code{
+  flex:0 0 auto;min-width:46px;padding:0 8px;height:36px;border-radius:11px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:800;font-size:12.5px;letter-spacing:.02em;
+  background:var(--bg);color:var(--brand2);
+}
+.who{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
+.nm{
+  font-weight:600;font-size:16.5px;line-height:1.25;letter-spacing:-.005em;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.sub{font-size:12.5px;line-height:1.3;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.bar{height:4px;border-radius:2px;background:var(--line);overflow:hidden;margin-top:1px}
+.bar i{display:block;height:100%;background:var(--brand2);border-radius:2px}
+.pts{
+  flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:2px;
+  font-variant-numeric:tabular-nums;
+}
+.pts b{font-weight:800;font-size:20px;line-height:1;letter-spacing:-.02em}
+.pts small{font-size:10.5px;font-weight:600;color:var(--muted);letter-spacing:.01em}
+.empty{text-align:center;color:var(--muted);padding:40px 16px;font-size:15px;line-height:1.5}
+
 .sheet{position:fixed;inset:0;z-index:40;display:none}
 .sheet.on{display:block}
 .scrim{position:absolute;inset:0;background:rgba(0,0,0,.45)}
@@ -79,18 +93,24 @@ main{padding:14px 12px 32px;max-width:640px;margin:0 auto}
   animation:up .22s ease-out;
 }
 @keyframes up{from{transform:translateY(16px);opacity:.6}to{transform:none;opacity:1}}
-.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:8px auto 12px}
-.phead{display:flex;align-items:center;gap:12px;padding:0 4px 12px}
-.phead .big{font-size:26px;font-weight:800;letter-spacing:-.02em}
-.tline{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 12px;
-  background:var(--card);border:1px solid var(--line);border-radius:11px;margin-bottom:6px}
-.tline.none{opacity:.5}
-.tname{font-size:14.5px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.tval{font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap}
-.tag{font-size:11px;font-weight:700;padding:2px 7px;border-radius:6px;background:var(--bg);color:var(--muted)}
-footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 12px 28px}
+.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:8px auto 14px}
+.phead{display:flex;align-items:center;gap:14px;padding:0 4px 14px}
+.phead .who{gap:4px}
+.phead .big{font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1}
+.tline{
+  display:flex;align-items:center;gap:12px;padding:12px 13px;
+  background:var(--card);border:1px solid var(--line);border-radius:12px;margin-bottom:7px;
+}
+.tline.none{opacity:.45}
+.tag{
+  flex:0 0 auto;min-width:44px;text-align:center;font-size:11.5px;font-weight:700;
+  padding:4px 7px;border-radius:7px;background:var(--bg);color:var(--muted);letter-spacing:.02em;
+}
+.tname{flex:1;min-width:0;font-size:14.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.tval{flex:0 0 auto;font-weight:700;font-size:15.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
+footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30px}
 .refresh{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--muted);
-  font:inherit;font-size:13px;padding:8px 14px;border-radius:999px;cursor:pointer}
+  font:inherit;font-size:13px;padding:9px 16px;border-radius:999px;cursor:pointer}
 </style>
 </head>
 <body>
@@ -106,11 +126,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 12px 28p
 </header>
 
 <main>
-  <select class="picker" id="taskPick" hidden></select>
   <div class="list" id="list"><div class="empty">Ielādē rezultātus…</div></div>
   <footer>
     <button class="refresh" id="btnRefresh">Atjaunot tagad</button>
-    <div id="foot" style="margin-top:10px"></div>
+    <div id="foot" style="margin-top:12px"></div>
   </footer>
 </main>
 
@@ -120,7 +139,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 12px 28p
     <div class="grab"></div>
     <div class="phead">
       <div class="place" id="dPlace">–</div>
-      <div style="flex:1;min-width:0">
+      <div class="who">
         <div class="nm" id="dName" style="font-size:18px"></div>
         <div class="sub" id="dSub"></div>
       </div>
@@ -133,9 +152,11 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:18px 12px 28p
 <script>
 const SHEET_ID = '1yNf7ao3RczgtD4VqRvhtDAxhlYWqI5p2SeWMpV6Mn3E';
 const GID = '813088766';
-const URL = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID;
+const SRC = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID;
 const REFRESH_MS = 30000;
-const CACHE_KEY = 'ligatne-results-v1';
+const CACHE_KEY = 'ligatne-results-v2';
+
+const T_FIRST = 2, T_LAST = 22, I_PEN = 23, I_TOTAL = 24, I_PLACE = 25;
 
 function parseCSV(text){
   const rows=[]; let row=[], field='', q=false;
@@ -153,51 +174,54 @@ function parseCSV(text){
   return rows;
 }
 
-const T_FIRST = 2, T_LAST = 22, I_PEN = 23, I_TOTAL = 24, I_PLACE = 25, I_DONE = 26;
+function cellNum(v){
+  const s = (v==null?'':String(v)).trim();
+  if(s === '') return null;
+  const n = parseFloat(s.replace(',', '.'));
+  return isNaN(n) ? null : n;
+}
 
 function shape(rows){
   const head = rows[1] || [];
   const tasks = [];
   for(let c=T_FIRST;c<=T_LAST;c++){
     const raw = (head[c]||'').trim();
-    if(raw) tasks.push({col:c, code:raw.split(' ')[0], name:raw.replace(/^\S+\s*/,'') || raw});
+    if(!raw) continue;
+    const sp = raw.indexOf(' ');
+    tasks.push({col:c, code: sp<0 ? raw : raw.slice(0,sp), name: sp<0 ? raw : raw.slice(sp+1)});
   }
   const teams = [];
   for(let r=2;r<rows.length;r++){
     const row = rows[r]; if(!row) continue;
     const nr = (row[0]||'').trim();
-    if(!nr || !/^\d+$/.test(nr)) continue;
+    if(!/^\d+$/.test(nr)) continue;
     const scores = {};
+    let done = 0;
     tasks.forEach(t=>{
-      const v = (row[t.col]||'').trim();
-      scores[t.col] = v === '' ? null : (isNaN(parseFloat(v)) ? null : parseFloat(v));
+      const v = cellNum(row[t.col]);
+      scores[t.col] = v;
+      if(v !== null) done++;
     });
     teams.push({
       nr:+nr,
       name:(row[1]||'').trim() || ('Komanda Nr.'+nr),
-      scores,
-      penalty: parseFloat(row[I_PEN]) || 0,
-      total: parseFloat(row[I_TOTAL]),
-      place: parseFloat(row[I_PLACE]),
-      done: parseFloat(row[I_DONE]) || 0
+      scores, done,
+      penalty: cellNum(row[I_PEN]) || 0,
+      total: cellNum(row[I_TOTAL]),
+      place: cellNum(row[I_PLACE])
     });
   }
+  tasks.forEach(t=>{
+    t.visited = teams.filter(x=>x.scores[t.col] !== null).length;
+  });
   return {tasks, teams};
 }
 
-function rank(list, get){
-  const vals = list.map(get);
-  return list.map((x,i)=>{
-    const v = vals[i];
-    if(v === null || isNaN(v)) return {item:x, val:null, place:null};
-    return {item:x, val:v, place: vals.filter(o=>o!==null && !isNaN(o) && o>v).length + 1};
-  });
-}
-
-let DATA = null, view = 'total', taskIdx = 0;
+let DATA = null, view = 'total';
 const $ = s=>document.querySelector(s);
 const el = (t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!==undefined)e.innerHTML=h; return e;};
 const esc = s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const plural = (n,one,few)=> n===1 ? one : few;
 
 function fmtAgo(ts){
   const s = Math.round((Date.now()-ts)/1000);
@@ -207,53 +231,66 @@ function fmtAgo(ts){
   return 'pirms ' + Math.round(m/60) + ' h';
 }
 
-function render(){
-  const list = $('#list'); list.innerHTML='';
-  if(!DATA || !DATA.teams.length){ list.appendChild(el('div','empty','Nav datu.')); return; }
-  $('#taskPick').hidden = view !== 'task';
-
-  let ranked, maxVal, sub;
-  if(view === 'total'){
-    ranked = DATA.teams.filter(t=>!isNaN(t.total)).map(t=>({item:t,val:t.total,place:t.place}));
-    sub = t=>t.done + ' no ' + DATA.tasks.length + ' uzd.';
-  } else {
-    const task = DATA.tasks[taskIdx];
-    ranked = rank(DATA.teams, t=>t.scores[task.col]).filter(x=>x.val!==null);
-    sub = ()=>task.code + ' · ' + task.name;
-  }
-  ranked.sort((a,b)=> (b.val-a.val) || (a.item.nr-b.item.nr));
-  maxVal = ranked.length ? Math.max(...ranked.map(r=>r.val)) : 0;
-
-  if(!ranked.length){ list.appendChild(el('div','empty','Šim uzdevumam vēl nav rezultātu.')); return; }
-
+function renderTotal(list){
+  const nT = DATA.tasks.length;
+  const ranked = DATA.teams.filter(t=>t.total !== null)
+    .map(t=>({t, val:t.total, place:t.place}))
+    .sort((a,b)=> (b.val-a.val) || (a.t.nr-b.t.nr));
+  if(!ranked.length){ list.appendChild(el('div','empty','Vēl nav neviena rezultāta.')); return; }
+  const max = Math.max(...ranked.map(r=>r.val), 1);
   ranked.forEach(r=>{
     const p = r.place;
-    const b = el('button','row' + (p<=3 ? ' p'+p : ''));
+    const b = el('button','row' + (p && p<=3 ? ' p'+p : ''));
     b.innerHTML =
       '<span class="place">'+(p||'–')+'</span>'+
-      '<span class="who"><span class="nm">'+esc(r.item.name)+'</span>'+
-        '<span class="sub">Nr. '+r.item.nr+' · '+esc(sub(r.item))+'</span>'+
-        '<span class="bar"><i style="width:'+(maxVal>0?Math.max(3,r.val/maxVal*100):0)+'%"></i></span>'+
+      '<span class="who">'+
+        '<span class="nm">'+esc(r.t.name)+'</span>'+
+        '<span class="sub">Nr.&nbsp;'+r.t.nr+' &nbsp;·&nbsp; '+r.t.done+' no '+nT+' uzdevumiem'+
+          (r.t.penalty ? ' &nbsp;·&nbsp; sods −'+r.t.penalty : '')+'</span>'+
+        '<span class="bar"><i style="width:'+Math.max(3, r.val/max*100)+'%"></i></span>'+
       '</span>'+
-      '<span class="pts">'+r.val+'<small>punkti</small></span>';
-    b.onclick = ()=>openTeam(r.item);
+      '<span class="pts"><b>'+r.val+'</b><small>PUNKTI</small></span>';
+    b.onclick = ()=>openTeam(r.t);
     list.appendChild(b);
   });
 }
 
+function renderTasks(list){
+  const nTeams = DATA.teams.length;
+  DATA.tasks.forEach(t=>{
+    const d = el('div','row');
+    d.innerHTML =
+      '<span class="code">'+esc(t.code)+'</span>'+
+      '<span class="who">'+
+        '<span class="nm">'+esc(t.name)+'</span>'+
+        '<span class="sub">'+t.visited+' no '+nTeams+' '+plural(t.visited,'komanda','komandām')+' apmeklējušas</span>'+
+        '<span class="bar"><i style="width:'+(nTeams? t.visited/nTeams*100 : 0)+'%"></i></span>'+
+      '</span>'+
+      '<span class="pts"><b>'+t.visited+'</b><small>KOMANDAS</small></span>';
+    list.appendChild(d);
+  });
+}
+
+function render(){
+  const list = $('#list'); list.innerHTML='';
+  if(!DATA || !DATA.teams.length){ list.appendChild(el('div','empty','Nav datu.')); return; }
+  if(view === 'total') renderTotal(list); else renderTasks(list);
+}
+
 function openTeam(t){
+  const nT = DATA.tasks.length;
   $('#dName').textContent = t.name;
-  $('#dSub').textContent = 'Nr. ' + t.nr + ' · ' + t.done + ' no ' + DATA.tasks.length + ' uzdevumiem'
+  $('#dSub').textContent = 'Nr. ' + t.nr + ' · ' + t.done + ' no ' + nT + ' uzdevumiem'
       + (t.penalty ? ' · sods −' + t.penalty : '');
-  $('#dPts').textContent = isNaN(t.total) ? '–' : t.total;
-  $('#dPlace').textContent = isNaN(t.place) ? '–' : t.place;
+  $('#dPts').textContent = t.total === null ? '–' : t.total;
+  $('#dPlace').textContent = t.place === null ? '–' : t.place;
   const box = $('#dTasks'); box.innerHTML='';
   DATA.tasks.forEach(task=>{
     const v = t.scores[task.col];
     const line = el('div','tline' + (v===null?' none':''));
     line.innerHTML = '<span class="tag">'+esc(task.code)+'</span>'+
-      '<span class="tname" style="flex:1">'+esc(task.name)+'</span>'+
-      '<span class="tval">'+(v===null?'—':v)+'</span>';
+      '<span class="tname">'+esc(task.name)+'</span>'+
+      '<span class="tval">'+(v===null ? '—' : v + ' p')+'</span>';
     box.appendChild(line);
   });
   $('#sheet').classList.add('on');
@@ -268,30 +305,21 @@ function setStatus(ts, ok){
 
 async function load(){
   try{
-    const res = await fetch(URL + '&t=' + Date.now(), {cache:'no-store'});
+    const res = await fetch(SRC + '&t=' + Date.now(), {cache:'no-store'});
     if(!res.ok) throw new Error(res.status);
     const text = await res.text();
     DATA = shape(parseCSV(text));
     const stamp = Date.now();
     try{ localStorage.setItem(CACHE_KEY, JSON.stringify({stamp, text})); }catch(e){}
-    buildPicker(); render(); setStatus(stamp, true);
+    render(); setStatus(stamp, true);
   }catch(e){
     try{
       const c = JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
-      if(c){ DATA = shape(parseCSV(c.text)); buildPicker(); render(); setStatus(c.stamp, false); return; }
+      if(c){ DATA = shape(parseCSV(c.text)); render(); setStatus(c.stamp, false); return; }
     }catch(_){}
     setStatus(Date.now(), false);
     if(!DATA) $('#list').innerHTML = '<div class="empty">Nevar ielādēt rezultātus.<br>Pārbaudi interneta savienojumu.</div>';
   }
-}
-
-let pickerBuilt = false;
-function buildPicker(){
-  if(pickerBuilt || !DATA) return;
-  const p = $('#taskPick');
-  DATA.tasks.forEach((t,i)=> p.options[i] = new Option(t.code + ' · ' + t.name, i));
-  p.onchange = ()=>{ taskIdx = +p.value; render(); };
-  pickerBuilt = true;
 }
 
 $('#tab-total').onclick = ()=>{ view='total'; $('#tab-total').ariaSelected='true'; $('#tab-task').ariaSelected='false'; render(); };
