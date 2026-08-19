@@ -121,6 +121,22 @@ button.row:active{transform:scale(.985)}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30px}
 .refresh{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--muted);
   font:inherit;font-size:13px;padding:9px 16px;border-radius:999px;cursor:pointer}
+.countdown{
+  margin-top:10px;display:flex;align-items:center;justify-content:center;gap:8px;
+  background:rgba(255,255,255,.14);border-radius:999px;padding:7px 12px;
+  font-size:13px;font-weight:700;letter-spacing:.02em;
+}
+.countdown.warn{background:rgba(242,193,78,.28)}
+.countdown.hot{background:rgba(226,112,90,.34)}
+.countdown b{font-variant-numeric:tabular-nums;font-size:14.5px}
+.closed{
+  text-align:center;padding:54px 22px 46px;background:var(--card);border:1px solid var(--line);
+  border-radius:18px;box-shadow:var(--shadow);margin-top:6px;
+}
+.closed .eye{font-size:44px;line-height:1;margin-bottom:16px}
+.closed h2{margin:0 0 10px;font-size:23px;font-weight:800;letter-spacing:-.01em;color:var(--forest)}
+.closed p{margin:0;color:var(--muted);font-size:16px;line-height:1.5}
+.closed .big{margin-top:20px;font-size:20px;font-weight:800;color:var(--leaf)}
 .leaflet-popup-content{margin:10px 12px;font:14px/1.4 -apple-system,sans-serif}
 .leaflet-popup-content b{color:var(--forest)}
 </style>
@@ -140,9 +156,16 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
     <button role="tab" id="tab-task" aria-selected="false">Uzdevumi</button>
     <button role="tab" id="tab-map" aria-selected="false">Karte</button>
   </nav>
+  <div class="countdown" id="cd" hidden>Rezultāti redzami vēl <b id="cdText">—</b></div>
 </header>
 
 <main>
+  <div class="closed" id="closed" hidden>
+    <div class="eye">👁️</div>
+    <h2>Rezultāti vairs nav pieejami</h2>
+    <p>Kopvērtējums tiek noslēgts.</p>
+    <div class="big">Tiekamies finišā!</div>
+  </div>
   <div id="mapwrap" hidden>
     <div class="maptools">
       <button class="mbtn" id="btnLocate">Rādīt, kur es esmu</button>
@@ -180,7 +203,7 @@ const GID = '813088766';
 const SRC = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID;
 const REFRESH_MS = 30000;
 const CACHE_KEY = 'ligatne-results-v3';
-const T_FIRST = 2, T_LAST = 22, I_PEN = 23, I_TOTAL = 24, I_PLACE = 25;
+const T_FIRST = 2, T_LAST = 22, I_PEN = 23, I_TOTAL = 24, I_PLACE = 25, I_CUTOFF = 29;
 
 function parseCSV(text){
   const rows=[]; let row=[], field='', q=false;
@@ -209,8 +232,24 @@ function parseLatLng(v){
   return [lat,lng];
 }
 
+function parseWhen(v){
+  const s=String(v||'').trim();
+  if(!s) return null;
+  let m=s.match(/^(\d{4})-(\d{1,2})-(\d{1,2})[T ](\d{1,2}):(\d{2})/);
+  if(m) return new Date(+m[1],+m[2]-1,+m[3],+m[4],+m[5]).getTime();
+  m=s.match(/^(\d{1,2})[.\/](\d{1,2})[.\/](\d{4})[ ,]+(\d{1,2}):(\d{2})/);
+  if(m){
+    let d=+m[1], mo=+m[2];
+    if(mo>12){ if(d>12) return null; const t=d; d=mo; mo=t; }
+    if(mo>12||d>31) return null;
+    return new Date(+m[3],mo-1,d,+m[4],+m[5]).getTime();
+  }
+  return null;
+}
+
 function shape(rows){
   const coordRow = rows[0] || [], head = rows[1] || [];
+  const cutoff = parseWhen(coordRow[I_CUTOFF]);
   const tasks = [];
   for(let c=T_FIRST;c<=T_LAST;c++){
     const raw=(head[c]||'').trim(); if(!raw) continue;
@@ -229,7 +268,7 @@ function shape(rows){
       penalty:cellNum(row[I_PEN])||0, total:cellNum(row[I_TOTAL]), place:cellNum(row[I_PLACE])});
   }
   tasks.forEach(t=>{ t.visited = teams.filter(x=>x.scores[t.col]!==null).length; });
-  return {tasks, teams};
+  return {tasks, teams, cutoff};
 }
 
 let DATA=null, view='total';
@@ -276,8 +315,33 @@ function renderTasks(list){
   });
 }
 
+function isClosed(){ return !!(DATA && DATA.cutoff && Date.now() >= DATA.cutoff); }
+
+function fmtLeft(ms){
+  const s=Math.max(0,Math.floor(ms/1000));
+  const h=Math.floor(s/3600), m=Math.floor(s%3600/60), ss=s%60;
+  const p=n=>String(n).padStart(2,'0');
+  return h>0 ? h+':'+p(m)+':'+p(ss) : p(m)+':'+p(ss);
+}
+
+function tick(){
+  const cd=$('#cd');
+  if(!DATA || !DATA.cutoff){ cd.hidden=true; return; }
+  if(isClosed()){ cd.hidden=true; if($('#closed').hidden) render(); return; }
+  const left=DATA.cutoff-Date.now();
+  cd.hidden=false;
+  cd.className='countdown'+(left<5*60000?' hot':(left<15*60000?' warn':''));
+  $('#cdText').textContent=fmtLeft(left);
+}
+
 function render(){
   const list=$('#list');
+  const closed=isClosed();
+  $('#closed').hidden = !closed;
+  document.querySelector('nav').style.display = closed ? 'none' : '';
+  $('#cd').hidden = closed || !DATA || !DATA.cutoff;
+  document.querySelector('footer').hidden = closed;
+  if(closed){ list.hidden=true; $('#mapwrap').hidden=true; return; }
   $('#mapwrap').hidden = view!=='map';
   list.hidden = view==='map';
   if(view==='map'){ initMap(); return; }
@@ -318,11 +382,11 @@ async function load(){
     DATA=shape(parseCSV(text));
     const stamp=Date.now();
     try{ localStorage.setItem(CACHE_KEY,JSON.stringify({stamp,text})); }catch(e){}
-    render(); if(MAP) drawPins(); setStatus(stamp,true);
+    render(); tick(); if(MAP) drawPins(); setStatus(stamp,true);
   }catch(e){
     try{
       const c=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
-      if(c){ DATA=shape(parseCSV(c.text)); render(); setStatus(c.stamp,false); return; }
+      if(c){ DATA=shape(parseCSV(c.text)); render(); tick(); setStatus(c.stamp,false); return; }
     }catch(_){}
     setStatus(Date.now(),false);
     if(!DATA) $('#list').innerHTML='<div class="empty">Nevar ielādēt rezultātus.<br>Pārbaudi interneta savienojumu.</div>';
@@ -425,6 +489,7 @@ document.addEventListener('visibilitychange',()=>{ if(!document.hidden) load(); 
 
 load();
 setInterval(load, REFRESH_MS);
+setInterval(tick, 1000);
 </script>
 </body>
 </html>
