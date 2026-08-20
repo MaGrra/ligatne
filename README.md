@@ -62,9 +62,14 @@ written as `lat,lng` — e.g. `57.2318,25.0389`. They ride along in the same CSV
 so no extra request and no second file.
 
 - A task with no coordinate simply does not appear on the map. Nothing breaks.
-- Right now those are MOCK coordinates around Līgatne village, ~1.5 x 1.1 km.
-  Replace them with the real ones in the sheet; the page picks them up on the
-  next 30-second refresh.
+  SU21 BINGO is deliberately blank — it is scored remotely.
+- **A task can have SEVERAL start points**: put them in the same cell separated
+  by `|`, e.g. `57.239496,25.046452 | 57.231163,25.046028`. SU15 Upings uses
+  this because teams may start from either end of the river.
+  Every point gets its own pin carrying the SAME SU label, and because greying
+  is decided per TASK (not per pin), one registered score greys all of that
+  task's pins at once. The "x of 20 padarīti" count treats the task as one.
+- Real coordinates were loaded 2026-08-20; 20 tasks, 21 pins.
 - Map tiles come from OpenStreetMap and Leaflet loads from unpkg, both only when
   the Karte tab is first opened. No internet -> the tab says so, the rest of the
   page still works.

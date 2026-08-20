@@ -254,12 +254,15 @@ function cellNum(v){
   const n=parseFloat(s.replace(',','.'));
   return isNaN(n)?null:n;
 }
-function parseLatLng(v){
+function parseOneSpot(v){
   const m=String(v||'').trim().match(/^(-?\d+(?:\.\d+)?)\s*[,;]\s*(-?\d+(?:\.\d+)?)$/);
   if(!m) return null;
   const lat=+m[1], lng=+m[2];
   if(Math.abs(lat)>90||Math.abs(lng)>180) return null;
   return [lat,lng];
+}
+function parseSpots(v){
+  return String(v||'').split(/[|\n]/).map(parseOneSpot).filter(Boolean);
 }
 
 function parseWhen(v){
@@ -285,7 +288,7 @@ function shape(rows){
     const raw=(head[c]||'').trim(); if(!raw) continue;
     const sp=raw.indexOf(' ');
     tasks.push({col:c, code: sp<0?raw:raw.slice(0,sp), name: sp<0?raw:raw.slice(sp+1),
-                pos: parseLatLng(coordRow[c])});
+                spots: parseSpots(coordRow[c])});
   }
   const teams=[];
   for(let r=2;r<rows.length;r++){
@@ -476,18 +479,22 @@ function drawPins(){
   const me=myTeam();
   let doneN=0;
   DATA.tasks.forEach(t=>{
-    if(!t.pos) return;
+    if(!t.spots.length) return;
     const v = me ? me.scores[t.col] : null;
     const isDone = !!(me && v!==null);
     if(isDone){ doneN++; if(HIDEDONE) return; }
-    const icon=L.divIcon({className:'', html:'<div class="pin'+(isDone?' done':'')+'">'+esc(t.code)+'</div>',
-      iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-16]});
-    L.marker(t.pos,{icon}).addTo(PINS)
-      .bindPopup('<b>'+esc(t.code)+' · '+esc(t.name)+'</b><br>'+
-        (isDone ? 'Jūs jau bijāt · '+v+' p'
-                : t.visited+' no '+DATA.teams.length+' komandām jau bijušas'));
+    const many = t.spots.length>1;
+    t.spots.forEach((pos,i)=>{
+      const icon=L.divIcon({className:'', html:'<div class="pin'+(isDone?' done':'')+'">'+esc(t.code)+'</div>',
+        iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-16]});
+      L.marker(pos,{icon}).addTo(PINS)
+        .bindPopup('<b>'+esc(t.code)+' · '+esc(t.name)+'</b>'+
+          (many ? '<br>'+(i+1)+'. sākuma vieta no '+t.spots.length+' — jebkura der' : '')+'<br>'+
+          (isDone ? 'Jūs jau bijāt · '+v+' p'
+                  : t.visited+' no '+DATA.teams.length+' komandām jau bijušas'));
+    });
   });
-  const n=DATA.tasks.filter(t=>t.pos).length;
+  const n=DATA.tasks.filter(t=>t.spots.length).length;
   $('#mapNote').textContent =
       !n ? 'Nevienam uzdevumam vēl nav koordinātu (KOPVĒRTĒJUMS 1. rinda).'
     : !me ? 'Izvēlies komandu, lai redzētu, kuri uzdevumi tev vēl priekšā.'
@@ -532,7 +539,7 @@ function maybeAsk(){
 }
 
 function fitPins(){
-  const pts=DATA?DATA.tasks.filter(t=>t.pos).map(t=>t.pos):[];
+  const pts=DATA?DATA.tasks.reduce((a,t)=>a.concat(t.spots),[]):[];
   if(MAP&&pts.length) MAP.fitBounds(L.latLngBounds(pts).pad(0.25));
 }
 
