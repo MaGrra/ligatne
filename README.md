@@ -72,6 +72,30 @@ so no extra request and no second file.
   GitHub Pages gives you (localhost also counts). Nothing is uploaded anywhere —
   the position stays in the phone and is drawn locally. No other team sees it.
 
+## Team picker + greyed-out pins
+On first open the page asks "Kura ir tava komanda?" and the choice is kept in
+localStorage (`ligatne-myteam-v1`). On the map, every task that team has
+already been scored for turns **grey with no shadow**; the pin stays put and its
+popup shows the points. `Slēpt padarītos` hides them outright if a team prefers
+the shorter map; that toggle is remembered too (`ligatne-hidedone-v1`).
+The picked team's row is also outlined in the Kopvērtējums list.
+
+- "Visited" = the team's cell for that task is not empty. A **0 counts as
+  visited** — that is the sheet's own rule (blank = never came, 0 = came and
+  scored nothing).
+- The pin only greys once a **referee types the score**, not when the team
+  finishes. Self-service tasks (SU4, SU15, SU21) are scored from WhatsApp and
+  can lag by hours; the three Loquiz tasks fill in within a minute. This is why
+  pins are greyed and never removed by default — a stale map is then merely out
+  of date instead of actively hiding a task the team still has to do.
+- The map note prints the data age (`Dati pirms 2 min`) so a team on bad signal
+  can see the greying may be behind. No extra polling was added — the page
+  already refetches every 30 s, on tab focus, and via `Atjaunot tagad`.
+- Team 20 exists as a number with no name, so it is filtered out of the picker
+  (`team.named`). Anyone can pick any team; a static page cannot verify identity,
+  so treat "which tasks has team X done" as public within the event.
+- `Izlaist` skips the question and is remembered, so it is asked only once.
+
 ## Beigu laiks (cutoff)
 Cell **`AD1` in KOPVĒRTĒJUMS** (label sits in `AC1`). Format `YYYY-MM-DD HH:MM`,
 read as local Riga time. The cell's number format is pinned to `yyyy-mm-dd hh:mm`
@@ -79,8 +103,10 @@ so the CSV export always looks the same — do not change that format.
 
 - Before the time: a live countdown sits under the tabs. It turns amber under
   15 minutes and red under 5.
-- At the time: the whole page flips to "Rezultāti vairs nav pieejami · Tiekamies
-  finišā!". Tabs, footer and countdown disappear.
+- At the time: the results flip to "Rezultāti vairs nav pieejami · Tiekamies
+  finišā!". The two results tabs, footer and countdown disappear — but the
+  **Karte tab stays open indefinitely**, so teams can still navigate after the
+  leaderboard closes. Only the standings are hidden, never the map.
 - Empty cell = no cutoff, results stay visible forever.
 - The page keeps polling after closing, so pushing the time out in the sheet
   brings the results back within 30 seconds. Same for pulling it in early.

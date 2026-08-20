@@ -98,6 +98,13 @@ button.row:active{transform:scale(.985)}
 .pin{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;
   background:var(--forest2);color:#fff;font:700 10.5px/1 -apple-system,sans-serif;
   border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)}
+.pin.done{background:#cdd6d1;color:#78867f;border-color:#e4eae7;box-shadow:none}
+.row.mine{outline:2px solid var(--leaf);outline-offset:-2px}
+.tpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px;padding:2px 0 14px}
+.tpick button{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);
+  border-radius:12px;padding:10px 11px;font:600 14.5px/1.25 inherit;text-align:left;cursor:pointer}
+.tpick button.on{background:var(--forest2);color:#fff;border-color:var(--forest2)}
+.tpick button small{display:block;font-weight:700;opacity:.6;font-size:11.5px;margin-bottom:3px}
 .me{width:18px;height:18px;border-radius:50%;background:var(--river);border:3px solid #fff;
   box-shadow:0 0 0 2px rgba(46,124,184,.4),0 2px 6px rgba(0,0,0,.4)}
 
@@ -163,11 +170,16 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
     <h2>Rezultāti vairs nav pieejami</h2>
     <p>Kopvērtējums tiek noslēgts.</p>
     <div class="big">Tiekamies finišā!</div>
+    <p style="margin-top:14px">Karte joprojām ir pieejama.</p>
   </div>
   <div id="mapwrap" hidden>
     <div class="maptools">
       <button class="mbtn" id="btnLocate">Rādīt, kur es esmu</button>
       <button class="mbtn" id="btnFit">Visi uzdevumi</button>
+    </div>
+    <div class="maptools">
+      <button class="mbtn" id="btnTeam">Izvēlies komandu</button>
+      <button class="mbtn" id="btnHide">Slēpt padarītos</button>
     </div>
     <div id="map"></div>
     <div class="mnote" id="mapNote">Atļauj atrašanās vietu, lai redzētu sevi kartē.</div>
@@ -192,6 +204,21 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
       <div class="big" id="dPts">0</div>
     </div>
     <div id="dTasks"></div>
+  </div>
+</div>
+
+<div class="sheet" id="tsheet">
+  <div class="scrim" data-tclose></div>
+  <div class="panel">
+    <div class="grab"></div>
+    <div class="phead">
+      <div class="who">
+        <div class="nm" style="font-size:18px">Kura ir tava komanda?</div>
+        <div class="sub">Kartē tavi padarītie uzdevumi kļūs pelēki.</div>
+      </div>
+    </div>
+    <div class="tpick" id="tpick"></div>
+    <button class="mbtn" id="btnSkip" style="margin-bottom:14px">Izlaist</button>
   </div>
 </div>
 
@@ -262,7 +289,8 @@ function shape(rows){
     if(!/^\d+$/.test(nr)) continue;
     const scores={}; let done=0;
     tasks.forEach(t=>{ const v=cellNum(row[t.col]); scores[t.col]=v; if(v!==null) done++; });
-    teams.push({nr:+nr, name:(row[1]||'').trim()||('Komanda Nr.'+nr), scores, done,
+    const rawName=(row[1]||'').trim();
+    teams.push({nr:+nr, name:rawName||('Komanda Nr.'+nr), named:!!rawName, scores, done,
       penalty:cellNum(row[I_PEN])||0, total:cellNum(row[I_TOTAL]), place:cellNum(row[I_PLACE])});
   }
   tasks.forEach(t=>{ t.visited = teams.filter(x=>x.scores[t.col]!==null).length; });
@@ -270,6 +298,14 @@ function shape(rows){
 }
 
 let DATA=null, view='total';
+const TEAM_KEY='ligatne-myteam-v1', HIDE_KEY='ligatne-hidedone-v1';
+function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
+function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
+let MYNR   = (()=>{ const v=lsGet(TEAM_KEY); return v ? +v : null; })();
+let HIDEDONE = lsGet(HIDE_KEY)==='1';
+let ASKED  = lsGet(TEAM_KEY)!==null;
+let PROMPTED=false, CLOSED_DONE=false, LASTOK=Date.now();
+function myTeam(){ return (DATA && MYNR!=null) ? (DATA.teams.find(t=>t.nr===MYNR)||null) : null; }
 const $=s=>document.querySelector(s);
 const el=(t,c,h)=>{const e=document.createElement(t); if(c)e.className=c; if(h!==undefined)e.innerHTML=h; return e;};
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -288,7 +324,7 @@ function renderTotal(list){
   if(!ranked.length){ list.appendChild(el('div','empty','Vēl nav neviena rezultāta.')); return; }
   const max=Math.max(...ranked.map(r=>r.val),1);
   ranked.forEach(r=>{
-    const p=r.place, b=el('button','row'+(p&&p<=3?' p'+p:''));
+    const p=r.place, b=el('button','row'+(p&&p<=3?' p'+p:'')+(MYNR===r.t.nr?' mine':''));
     b.innerHTML='<span class="place">'+(p||'–')+'</span>'+
       '<span class="who"><span class="nm">'+esc(r.t.name)+'</span>'+
       '<span class="sub">Nr.&nbsp;'+r.t.nr+' &nbsp;·&nbsp; '+r.t.done+' no '+nT+' uzdevumiem'+
@@ -325,7 +361,8 @@ function fmtLeft(ms){
 function tick(){
   const cd=$('#cd');
   if(!DATA || !DATA.cutoff){ cd.hidden=true; return; }
-  if(isClosed()){ cd.hidden=true; if($('#closed').hidden) render(); return; }
+  if(isClosed()){ cd.hidden=true; if(!CLOSED_DONE){ CLOSED_DONE=true; render(); } return; }
+  CLOSED_DONE=false;
   const left=DATA.cutoff-Date.now();
   cd.hidden=false;
   cd.className='countdown'+(left<5*60000?' hot':(left<15*60000?' warn':''));
@@ -335,14 +372,18 @@ function tick(){
 function render(){
   const list=$('#list');
   const closed=isClosed();
-  $('#closed').hidden = !closed;
-  document.querySelector('nav').style.display = closed ? 'none' : '';
+  $('#tab-total').hidden = closed;
+  $('#tab-task').hidden  = closed;
+  if(closed && view!=='map'){
+    $('#closed').hidden=false; list.hidden=true; $('#mapwrap').hidden=true;
+    $('#cd').hidden=true; document.querySelector('footer').hidden=true; return;
+  }
+  $('#closed').hidden=true;
   $('#cd').hidden = closed || !DATA || !DATA.cutoff;
-  document.querySelector('footer').hidden = closed;
-  if(closed){ list.hidden=true; $('#mapwrap').hidden=true; return; }
+  document.querySelector('footer').hidden=false;
   $('#mapwrap').hidden = view!=='map';
   list.hidden = view==='map';
-  if(view==='map'){ initMap(); return; }
+  if(view==='map'){ syncMapBtns(); initMap(); return; }
   list.innerHTML='';
   if(!DATA||!DATA.teams.length){ list.appendChild(el('div','empty','Nav datu.')); return; }
   view==='total' ? renderTotal(list) : renderTasks(list);
@@ -367,6 +408,7 @@ function openTeam(t){
 }
 
 function setStatus(ts, ok){
+  LASTOK=ts;
   $('#dot').className='dot'+(!ok?' off':(Date.now()-ts>3*REFRESH_MS?' stale':''));
   $('#stamp').textContent=ok?fmtAgo(ts):'nav savienojuma';
   $('#foot').textContent='Atjaunojas automātiski ik 30 sekundes.';
@@ -380,11 +422,11 @@ async function load(){
     DATA=shape(parseCSV(text));
     const stamp=Date.now();
     try{ localStorage.setItem(CACHE_KEY,JSON.stringify({stamp,text})); }catch(e){}
-    render(); tick(); if(MAP) drawPins(); setStatus(stamp,true);
+    render(); tick(); if(MAP) drawPins(); setStatus(stamp,true); maybeAsk();
   }catch(e){
     try{
       const c=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
-      if(c){ DATA=shape(parseCSV(c.text)); render(); tick(); setStatus(c.stamp,false); return; }
+      if(c){ DATA=shape(parseCSV(c.text)); render(); tick(); setStatus(c.stamp,false); maybeAsk(); return; }
     }catch(_){}
     setStatus(Date.now(),false);
     if(!DATA) $('#list').innerHTML='<div class="empty">Nevar ielādēt rezultātus.<br>Pārbaudi interneta savienojumu.</div>';
@@ -424,17 +466,57 @@ async function initMap(){
 function drawPins(){
   if(!MAP||!DATA) return;
   PINS.clearLayers();
+  const me=myTeam();
+  let doneN=0;
   DATA.tasks.forEach(t=>{
     if(!t.pos) return;
-    const icon=L.divIcon({className:'', html:'<div class="pin">'+esc(t.code)+'</div>',
+    const v = me ? me.scores[t.col] : null;
+    const isDone = !!(me && v!==null);
+    if(isDone){ doneN++; if(HIDEDONE) return; }
+    const icon=L.divIcon({className:'', html:'<div class="pin'+(isDone?' done':'')+'">'+esc(t.code)+'</div>',
       iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-16]});
     L.marker(t.pos,{icon}).addTo(PINS)
-      .bindPopup('<b>'+esc(t.code)+' · '+esc(t.name)+'</b><br>'+t.visited+' no '+DATA.teams.length+' komandām jau bijušas');
+      .bindPopup('<b>'+esc(t.code)+' · '+esc(t.name)+'</b><br>'+
+        (isDone ? 'Jūs jau bijāt · '+v+' p'
+                : t.visited+' no '+DATA.teams.length+' komandām jau bijušas'));
   });
   const n=DATA.tasks.filter(t=>t.pos).length;
-  $('#mapNote').textContent = n
-    ? n+' no '+DATA.tasks.length+' uzdevumiem ir koordinātes. Atļauj atrašanās vietu, lai redzētu sevi.'
-    : 'Nevienam uzdevumam vēl nav koordinātu (KOPVĒRTĒJUMS 1. rinda).';
+  $('#mapNote').textContent =
+      !n ? 'Nevienam uzdevumam vēl nav koordinātu (KOPVĒRTĒJUMS 1. rinda).'
+    : !me ? 'Izvēlies komandu, lai redzētu, kuri uzdevumi tev vēl priekšā.'
+    : doneN+' no '+n+' padarīti'+(HIDEDONE?' — paslēpti.':' — pelēkie.')+' Dati '+fmtAgo(LASTOK)+'.';
+  syncMapBtns();
+}
+
+function syncMapBtns(){
+  const me=myTeam(), hb=$('#btnHide'), tb=$('#btnTeam');
+  if(!hb||!tb) return;
+  tb.textContent = me ? me.name : 'Izvēlies komandu';
+  tb.classList.toggle('on', !!me);
+  hb.textContent = HIDEDONE ? 'Rādīt padarītos' : 'Slēpt padarītos';
+  hb.classList.toggle('on', HIDEDONE);
+  hb.disabled = !me;
+  hb.style.opacity = me ? '' : '.45';
+}
+
+function openPicker(){
+  if(!DATA) return;
+  PROMPTED=true;
+  const box=$('#tpick'); box.innerHTML='';
+  DATA.teams.filter(t=>t.named).forEach(t=>{
+    const b=el('button', MYNR===t.nr?'on':'', '<small>Nr.&nbsp;'+t.nr+'</small>'+esc(t.name));
+    b.onclick=()=>{
+      MYNR=t.nr; ASKED=true; lsSet(TEAM_KEY,String(t.nr));
+      $('#tsheet').classList.remove('on');
+      render(); if(MAP) drawPins(); else syncMapBtns();
+    };
+    box.appendChild(b);
+  });
+  $('#tsheet').classList.add('on');
+}
+
+function maybeAsk(){
+  if(!ASKED && !PROMPTED && DATA && DATA.teams.some(t=>t.named)) openPicker();
 }
 
 function fitPins(){
@@ -482,6 +564,10 @@ $('#tab-map').onclick  =()=>tab('map');
 $('#btnRefresh').onclick=load;
 $('#btnLocate').onclick=locate;
 $('#btnFit').onclick=fitPins;
+$('#btnTeam').onclick=openPicker;
+$('#btnHide').onclick=()=>{ HIDEDONE=!HIDEDONE; lsSet(HIDE_KEY,HIDEDONE?'1':'0'); if(MAP) drawPins(); else syncMapBtns(); };
+$('#btnSkip').onclick=()=>{ ASKED=true; lsSet(TEAM_KEY,''); $('#tsheet').classList.remove('on'); };
+$('#tsheet').addEventListener('click',e=>{ if(e.target.dataset.tclose!==undefined) $('#tsheet').classList.remove('on'); });
 $('#sheet').addEventListener('click',e=>{ if(e.target.dataset.close!==undefined) $('#sheet').classList.remove('on'); });
 document.addEventListener('visibilitychange',()=>{ if(!document.hidden) load(); });
 
