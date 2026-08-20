@@ -72,13 +72,39 @@ so no extra request and no second file.
   GitHub Pages gives you (localhost also counts). Nothing is uploaded anywhere —
   the position stays in the phone and is drawn locally. No other team sees it.
 
+## Layout: two tabs, map on top of Uzdevumi
+`Kopvērtējums` and `Uzdevumi un karte`. The map is a fixed block at the top of
+the second tab with the task list under it — there is no separate Karte tab.
+
+The map's own controls live **inside the map** (a `L.Control` in the top-right),
+not as page buttons:
+- `◎` centre on me. First tap asks for location and starts following; each later
+  tap re-centres. **Dragging the map stops it following** (the Google Maps
+  rule) and the button dims; tap again to resume. The blue dot keeps updating
+  either way.
+- `✚` fit all tasks.
+
+`#map` height was `calc(100vh - 260px)`, which is why the map used to jump
+around while scrolling: on a phone `100vh` changes as the address bar hides.
+It is now `46svh` (small-viewport height, which does not change) with a
+`46vh` fallback first for older browsers, clamped 260–440px. `#map` also gained
+`position:relative; z-index:0; isolation:isolate` so Leaflet's internal
+z-indexes (up to 1000) can no longer paint over the sticky header (z-index 20).
+
+Known trade-off: with the map at the top of a scrolling tab, a one-finger drag
+inside the map pans the map instead of scrolling the page. That is why the map
+is kept to under half the screen — there is always list below it to scroll from.
+
 ## Team picker + greyed-out pins
 On first open the page asks "Kura ir tava komanda?" and the choice is kept in
 localStorage (`ligatne-myteam-v1`). On the map, every task that team has
 already been scored for turns **grey with no shadow**; the pin stays put and its
 popup shows the points. `Slēpt padarītos` hides them outright if a team prefers
 the shorter map; that toggle is remembered too (`ligatne-hidedone-v1`).
-The picked team's row is also outlined in the Kopvērtējums list.
+The picked team's row is also outlined in the Kopvērtējums list, and the team
+name sits as a tappable chip next to the "Rezultāti" title. The header is
+`position:sticky`, so that chip stays visible while scrolling and is the way to
+change team from any tab — the old map-only button is gone.
 
 - "Visited" = the team's cell for that task is not empty. A **0 counts as
   visited** — that is the sheet's own rule (blank = never came, 0 = came and
@@ -105,8 +131,10 @@ so the CSV export always looks the same — do not change that format.
   15 minutes and red under 5.
 - At the time: the results flip to "Rezultāti vairs nav pieejami · Tiekamies
   finišā!". The two results tabs, footer and countdown disappear — but the
-  **Karte tab stays open indefinitely**, so teams can still navigate after the
-  leaderboard closes. Only the standings are hidden, never the map.
+  **map stays open indefinitely**, so teams can still navigate after the
+  leaderboard closes. `render()` forces the view to the map tab, hides the
+  standings tab and the task list, and leaves the map and the refresh button
+  working. Only the standings are ever hidden, never the map.
 - Empty cell = no cutoff, results stay visible forever.
 - The page keeps polling after closing, so pushing the time out in the sheet
   brings the results back within 30 seconds. Same for pulling it in early.

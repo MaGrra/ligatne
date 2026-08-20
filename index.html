@@ -41,7 +41,12 @@ header{
   box-shadow:0 2px 14px rgba(0,0,0,.22);
 }
 .h-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
-h1{margin:0;font-size:18px;font-weight:800;letter-spacing:.01em;text-transform:uppercase}
+h1{margin:0;font-size:18px;font-weight:800;letter-spacing:.01em;text-transform:uppercase;flex:0 0 auto}
+.hid{display:flex;align-items:center;gap:8px;min-width:0;flex:1 1 auto}
+.hteam{appearance:none;border:0;border-radius:999px;background:rgba(255,255,255,.18);color:#fff;
+  font:inherit;font-size:12.5px;font-weight:700;padding:5px 10px;cursor:pointer;flex:0 1 auto;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.hteam:active{background:rgba(255,255,255,.32)}
 .status{display:flex;align-items:center;gap:6px;font-size:12px;opacity:.92;white-space:nowrap}
 .dot{width:8px;height:8px;border-radius:50%;background:var(--leaf-l);animation:pulse 2.4s infinite}
 .dot.stale{background:#F2C14E;animation:none}
@@ -87,9 +92,14 @@ button.row:active{transform:scale(.985)}
 .pts small{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.03em}
 .empty{text-align:center;color:var(--muted);padding:40px 16px;font-size:15px;line-height:1.5}
 
-#map{height:calc(100vh - 260px);min-height:340px;border-radius:16px;overflow:hidden;
+#map{height:46vh;height:46svh;min-height:260px;max-height:440px;
+  border-radius:16px;overflow:hidden;position:relative;z-index:0;isolation:isolate;
   border:1px solid var(--line);box-shadow:var(--shadow);background:var(--card)}
-.maptools{display:flex;gap:8px;margin-bottom:10px}
+#mapwrap{margin-bottom:14px}
+.mapctl a{width:34px;height:34px;line-height:34px;text-align:center;font-size:18px;
+  background:#fff;color:#12211A;font-weight:700}
+.mapctl a.on{background:var(--forest2);color:#fff}
+.maptools{display:flex;gap:8px;margin:10px 0 0}
 .mbtn{flex:1;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);
   font:inherit;font-size:14px;font-weight:650;padding:11px 10px;border-radius:12px;cursor:pointer;
   box-shadow:var(--shadow)}
@@ -154,13 +164,15 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
 
 <header>
   <div class="h-top">
-    <h1>Rezultāti</h1>
+    <div class="hid">
+      <h1>Rezultāti</h1>
+      <button class="hteam" id="hTeam" hidden>—</button>
+    </div>
     <div class="status"><span class="dot" id="dot"></span><span id="stamp">ielādē…</span></div>
   </div>
   <nav role="tablist">
     <button role="tab" id="tab-total" aria-selected="true">Kopvērtējums</button>
-    <button role="tab" id="tab-task" aria-selected="false">Uzdevumi</button>
-    <button role="tab" id="tab-map" aria-selected="false">Karte</button>
+    <button role="tab" id="tab-task" aria-selected="false">Uzdevumi un karte</button>
   </nav>
   <div class="countdown" id="cd" hidden>Rezultāti redzami vēl <b id="cdText">—</b></div>
 </header>
@@ -170,19 +182,12 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
     <h2>Rezultāti vairs nav pieejami</h2>
     <p>Kopvērtējums tiek noslēgts.</p>
     <div class="big">Tiekamies finišā!</div>
-    <p style="margin-top:14px">Karte joprojām ir pieejama.</p>
+    <p style="margin-top:14px">Karte zemāk joprojām darbojas.</p>
   </div>
   <div id="mapwrap" hidden>
-    <div class="maptools">
-      <button class="mbtn" id="btnLocate">Rādīt, kur es esmu</button>
-      <button class="mbtn" id="btnFit">Visi uzdevumi</button>
-    </div>
-    <div class="maptools">
-      <button class="mbtn" id="btnTeam">Izvēlies komandu</button>
-      <button class="mbtn" id="btnHide">Slēpt padarītos</button>
-    </div>
     <div id="map"></div>
     <div class="mnote" id="mapNote">Atļauj atrašanās vietu, lai redzētu sevi kartē.</div>
+    <div class="maptools"><button class="mbtn" id="btnHide">Slēpt padarītos</button></div>
   </div>
   <div class="list" id="list"><div class="empty">Ielādē rezultātus…</div></div>
   <footer>
@@ -372,18 +377,18 @@ function tick(){
 function render(){
   const list=$('#list');
   const closed=isClosed();
+  if(closed && view==='total') view='task';
+  syncTeamChip();
   $('#tab-total').hidden = closed;
-  $('#tab-task').hidden  = closed;
-  if(closed && view!=='map'){
-    $('#closed').hidden=false; list.hidden=true; $('#mapwrap').hidden=true;
-    $('#cd').hidden=true; document.querySelector('footer').hidden=true; return;
-  }
-  $('#closed').hidden=true;
+  $('#tab-total').ariaSelected = String(view==='total');
+  $('#tab-task').ariaSelected  = String(view==='task');
+  $('#closed').hidden = !closed;
   $('#cd').hidden = closed || !DATA || !DATA.cutoff;
-  document.querySelector('footer').hidden=false;
-  $('#mapwrap').hidden = view!=='map';
-  list.hidden = view==='map';
-  if(view==='map'){ syncMapBtns(); initMap(); return; }
+  document.querySelector('footer').hidden = false;
+  $('#mapwrap').hidden = view!=='task';
+  list.hidden = closed;
+  if(view==='task'){ syncMapBtns(); initMap(); }
+  if(closed) return;
   list.innerHTML='';
   if(!DATA||!DATA.teams.length){ list.appendChild(el('div','empty','Nav datu.')); return; }
   view==='total' ? renderTotal(list) : renderTasks(list);
@@ -435,6 +440,7 @@ async function load(){
 
 /* ---------------- map ---------------- */
 let MAP=null, PINS=null, MEDOT=null, MERING=null, WATCH=null, LEAFLET_LOADING=false;
+let LOCBTN=null, FOLLOW=false;
 
 function loadLeaflet(){
   return new Promise((ok,fail)=>{
@@ -459,6 +465,7 @@ async function initMap(){
   L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
     {maxZoom:19, attribution:'© OpenStreetMap'}).addTo(MAP);
   PINS=L.layerGroup().addTo(MAP);
+  addMapControls();
   drawPins(); fitPins();
   setTimeout(()=>MAP.invalidateSize(),60);
 }
@@ -488,11 +495,16 @@ function drawPins(){
   syncMapBtns();
 }
 
+function syncTeamChip(){
+  const c=$('#hTeam'), me=myTeam();
+  if(!c) return;
+  c.hidden = !DATA;
+  c.textContent = me ? me.name : 'Izvēlies komandu';
+}
+
 function syncMapBtns(){
-  const me=myTeam(), hb=$('#btnHide'), tb=$('#btnTeam');
-  if(!hb||!tb) return;
-  tb.textContent = me ? me.name : 'Izvēlies komandu';
-  tb.classList.toggle('on', !!me);
+  const me=myTeam(), hb=$('#btnHide');
+  if(!hb) return;
   hb.textContent = HIDEDONE ? 'Rādīt padarītos' : 'Slēpt padarītos';
   hb.classList.toggle('on', HIDEDONE);
   hb.disabled = !me;
@@ -508,7 +520,7 @@ function openPicker(){
     b.onclick=()=>{
       MYNR=t.nr; ASKED=true; lsSet(TEAM_KEY,String(t.nr));
       $('#tsheet').classList.remove('on');
-      render(); if(MAP) drawPins(); else syncMapBtns();
+      render(); if(MAP) drawPins();
     };
     box.appendChild(b);
   });
@@ -524,29 +536,48 @@ function fitPins(){
   if(MAP&&pts.length) MAP.fitBounds(L.latLngBounds(pts).pad(0.25));
 }
 
-function locate(){
+function setLocBtn(){ if(LOCBTN) LOCBTN.classList.toggle('on', FOLLOW && MEDOT!==null); }
+
+function addMapControls(){
+  const Ctl=L.Control.extend({
+    options:{position:'topright'},
+    onAdd:function(){
+      const box=L.DomUtil.create('div','leaflet-bar mapctl');
+      const mk=(html,title,fn)=>{
+        const a=L.DomUtil.create('a','',box);
+        a.href='#'; a.title=title; a.innerHTML=html; a.setAttribute('role','button');
+        a.setAttribute('aria-label',title);
+        L.DomEvent.on(a,'click',L.DomEvent.stop);
+        L.DomEvent.on(a,'click',fn);
+        return a;
+      };
+      LOCBTN = mk('&#9678;','Centrēt uz mani',centerOnMe);
+      mk('&#10018;','Rādīt visus uzdevumus',fitPins);
+      return box;
+    }
+  });
+  MAP.addControl(new Ctl());
+  MAP.on('dragstart zoomstart', e=>{ if(e.type==='dragstart'){ FOLLOW=false; setLocBtn(); } });
+}
+
+function centerOnMe(){
   if(!navigator.geolocation){ $('#mapNote').textContent='Šī ierīce neatbalsta atrašanās vietu.'; return; }
-  const btn=$('#btnLocate');
-  if(WATCH!==null){
-    navigator.geolocation.clearWatch(WATCH); WATCH=null;
-    btn.classList.remove('on'); btn.textContent='Rādīt, kur es esmu';
-    if(MEDOT){ MAP.removeLayer(MEDOT); MEDOT=null; }
-    if(MERING){ MAP.removeLayer(MERING); MERING=null; }
-    return;
-  }
-  btn.textContent='Meklē…';
+  FOLLOW=true;
+  if(MEDOT){ MAP.setView(MEDOT.getLatLng(), Math.max(MAP.getZoom(),16)); setLocBtn(); return; }
+  $('#mapNote').textContent='Meklē tavu atrašanās vietu…';
+  if(WATCH!==null) return;
   WATCH=navigator.geolocation.watchPosition(p=>{
     const ll=[p.coords.latitude,p.coords.longitude], acc=p.coords.accuracy||0;
     if(!MEDOT){
-      MEDOT=L.marker(ll,{icon:L.divIcon({className:'',html:'<div class="me"></div>',iconSize:[18,18],iconAnchor:[9,9]}),
+      MEDOT=L.marker(ll,{icon:L.divIcon({className:'',html:'<div class=\"me\"></div>',iconSize:[18,18],iconAnchor:[9,9]}),
         zIndexOffset:1000}).addTo(MAP);
       MERING=L.circle(ll,{radius:acc,color:'#2E7CB8',weight:1,fillColor:'#2E7CB8',fillOpacity:.12}).addTo(MAP);
-      MAP.setView(ll,16);
     } else { MEDOT.setLatLng(ll); MERING.setLatLng(ll).setRadius(acc); }
-    btn.classList.add('on'); btn.textContent='Seko man · izslēgt';
+    if(FOLLOW) MAP.setView(ll, Math.max(MAP.getZoom(),16));
+    setLocBtn();
     $('#mapNote').textContent='Tava atrašanās vieta, precizitāte ±'+Math.round(acc)+' m.';
   }, err=>{
-    WATCH=null; btn.classList.remove('on'); btn.textContent='Rādīt, kur es esmu';
+    WATCH=null; FOLLOW=false; setLocBtn();
     $('#mapNote').textContent = err.code===1
       ? 'Atrašanās vieta liegta. Atļauj to pārlūka iestatījumos.'
       : 'Nevar noteikt atrašanās vietu. Pamēģini ārā zem klajas debess.';
@@ -555,16 +586,13 @@ function locate(){
 
 function tab(which){
   view=which;
-  ['total','task','map'].forEach(k=> $('#tab-'+k).ariaSelected = String(k===which));
+  ['total','task'].forEach(k=> $('#tab-'+k).ariaSelected = String(k===which));
   render();
 }
 $('#tab-total').onclick=()=>tab('total');
 $('#tab-task').onclick =()=>tab('task');
-$('#tab-map').onclick  =()=>tab('map');
 $('#btnRefresh').onclick=load;
-$('#btnLocate').onclick=locate;
-$('#btnFit').onclick=fitPins;
-$('#btnTeam').onclick=openPicker;
+$('#hTeam').onclick=openPicker;
 $('#btnHide').onclick=()=>{ HIDEDONE=!HIDEDONE; lsSet(HIDE_KEY,HIDEDONE?'1':'0'); if(MAP) drawPins(); else syncMapBtns(); };
 $('#btnSkip').onclick=()=>{ ASKED=true; lsSet(TEAM_KEY,''); $('#tsheet').classList.remove('on'); };
 $('#tsheet').addEventListener('click',e=>{ if(e.target.dataset.tclose!==undefined) $('#tsheet').classList.remove('on'); });
