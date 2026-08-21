@@ -100,6 +100,34 @@ Known trade-off: with the map at the top of a scrolling tab, a one-finger drag
 inside the map pans the map instead of scrolling the page. That is why the map
 is kept to under half the screen — there is always list below it to scroll from.
 
+## TV mode
+Same link plus `#tv`:  https://magrra.github.io/ligatne/#tv
+There is also a **TV režīms** button in the footer, and an **Iziet no TV**
+button bottom-right while in TV mode.
+
+All 26 teams on one screen, no scrolling: a CSS grid filled column-first,
+`ceil(n/2)` rows, so ranks 1-13 run down the left column and 14-26 down the
+right. Each row carries the same facts as a mobile row — place, team name,
+`Nr. X · N no 21 uzd.`, penalty if any, and points. Teams on 0 stay listed.
+Banner, tabs, map, task list and footer are hidden; the header line keeps the
+countdown and the data age.
+
+- Sizes use `clamp()` with `vh` units, so it fills a 1080p TV and still works on
+  a laptop. `vh` is safe here because a TV browser has no address bar that
+  hides.
+- Padding is `2.4vh 2vw` so TV overscan (some sets crop the edges) cannot eat a
+  row.
+- The grid is only rebuilt when the numbers actually change (a signature string
+  is compared), so it does not blink every 30 seconds.
+- **TV obeys the same cutoff** as mobile. At the cutoff the grid is replaced by
+  the closed message.
+- A TV screensaver will still blank a static page. Turn it off on the TV;
+  browser-side prevention is unreliable on TV browsers.
+
+Nothing about the mobile view changed. `render()` returns to `renderTV()` on the
+first line only when the flag is present; with no flag the original path runs
+untouched.
+
 ## Team picker + greyed-out pins
 On first open the page asks "Kura ir tava komanda?" and the choice is kept in
 localStorage (`ligatne-myteam-v1`). On the map, every task that team has
@@ -122,8 +150,9 @@ change team from any tab — the old map-only button is gone.
 - The map note prints the data age (`Dati pirms 2 min`) so a team on bad signal
   can see the greying may be behind. No extra polling was added — the page
   already refetches every 30 s, on tab focus, and via `Atjaunot tagad`.
-- Team 20 exists as a number with no name, so it is filtered out of the picker
-  (`team.named`). Anyone can pick any team; a static page cannot verify identity,
+- A numbered row with no NAME is not a team at all — `shape()` skips it. That
+  drops the phantom "Komanda Nr.20" from the standings, the picker and the map
+  counts. 26 teams everywhere. Anyone can pick any team; a static page cannot verify identity,
   so treat "which tasks has team X done" as public within the event.
 - `Izlaist` skips the question and is remembered, so it is asked only once.
 

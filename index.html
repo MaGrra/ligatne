@@ -118,6 +118,33 @@ button.row:active{transform:scale(.985)}
 .me{width:18px;height:18px;border-radius:50%;background:var(--river);border:3px solid #fff;
   box-shadow:0 0 0 2px rgba(46,124,184,.4),0 2px 6px rgba(0,0,0,.4)}
 
+body.tvmode{overflow:hidden}
+body.tvmode .banner,body.tvmode .stripes,body.tvmode header,body.tvmode main{display:none!important}
+#tvwrap{display:none}
+body.tvmode #tvwrap{display:flex;flex-direction:column;height:100vh;padding:2.4vh 2vw;background:var(--bg)}
+.tvtop{display:flex;align-items:baseline;justify-content:space-between;gap:2vw;margin-bottom:1.5vh;flex:0 0 auto}
+.tvtitle{font-size:clamp(18px,3.4vh,46px);font-weight:800;color:var(--forest);text-transform:uppercase;letter-spacing:-.01em}
+.tvmeta{font-size:clamp(11px,1.8vh,23px);color:var(--muted);font-weight:600;white-space:nowrap}
+.tvmeta b{color:var(--brick)}
+.tvgrid{flex:1 1 auto;display:grid;grid-auto-flow:column;gap:.55vh 1.5vw;min-height:0}
+.tvrow{display:flex;align-items:center;gap:1vw;background:var(--card);border:1px solid var(--line);
+  border-radius:1vh;padding:0 1vw;min-height:0;overflow:hidden}
+.tvrow.p1{border-left:.45vw solid var(--g1)}
+.tvrow.p2{border-left:.45vw solid var(--g2)}
+.tvrow.p3{border-left:.45vw solid var(--g3)}
+.tvpl{flex:0 0 auto;min-width:2.8vw;text-align:center;font-weight:800;color:var(--forest2);
+  font-size:clamp(15px,2.9vh,40px);font-variant-numeric:tabular-nums}
+.tvwho{flex:1 1 auto;min-width:0}
+.tvnm{display:block;font-size:clamp(12px,2.3vh,31px);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tvsub{display:block;font-size:clamp(9px,1.5vh,19px);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tvpts{flex:0 0 auto;font-weight:800;color:var(--forest);font-size:clamp(16px,3.1vh,44px);font-variant-numeric:tabular-nums}
+.tvclosed{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.tvclosed h2{font-size:clamp(22px,6vh,78px);margin:0 0 2vh;color:var(--forest)}
+.tvclosed p{font-size:clamp(14px,3vh,40px);margin:0;color:var(--muted)}
+.tvexit{position:fixed;right:1vw;bottom:1vh;z-index:5;appearance:none;border:1px solid var(--line);
+  background:var(--card);color:var(--muted);border-radius:8px;padding:7px 11px;font:600 12.5px inherit;
+  cursor:pointer;opacity:.45}
+.tvexit:hover{opacity:1}
 .sheet{position:fixed;inset:0;z-index:1200;display:none}
 .sheet.on{display:block}
 .scrim{position:absolute;inset:0;background:rgba(6,20,14,.5)}
@@ -192,9 +219,19 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
   <div class="list" id="list"><div class="empty">Ielādē rezultātus…</div></div>
   <footer>
     <button class="refresh" id="btnRefresh">Atjaunot tagad</button>
+    <button class="refresh" id="btnTv" style="margin-left:8px">TV režīms</button>
     <div id="foot" style="margin-top:12px"></div>
   </footer>
 </main>
+
+<div id="tvwrap">
+  <div class="tvtop">
+    <div class="tvtitle">Kopvērtējums</div>
+    <div class="tvmeta" id="tvMeta"></div>
+  </div>
+  <div class="tvgrid" id="tvGrid"></div>
+</div>
+<button class="tvexit" id="btnTvExit" hidden>Iziet no TV</button>
 
 <div class="sheet" id="sheet">
   <div class="scrim" data-close></div>
@@ -298,7 +335,8 @@ function shape(rows){
     const scores={}; let done=0;
     tasks.forEach(t=>{ const v=cellNum(row[t.col]); scores[t.col]=v; if(v!==null) done++; });
     const rawName=(row[1]||'').trim();
-    teams.push({nr:+nr, name:rawName||('Komanda Nr.'+nr), named:!!rawName, scores, done,
+    if(!rawName) continue;
+    teams.push({nr:+nr, name:rawName, named:true, scores, done,
       penalty:cellNum(row[I_PEN])||0, total:cellNum(row[I_TOTAL]), place:cellNum(row[I_PLACE])});
   }
   tasks.forEach(t=>{ t.visited = teams.filter(x=>x.scores[t.col]!==null).length; });
@@ -371,13 +409,56 @@ function tick(){
   if(!DATA || !DATA.cutoff){ cd.hidden=true; return; }
   if(isClosed()){ cd.hidden=true; if(!CLOSED_DONE){ CLOSED_DONE=true; render(); } return; }
   CLOSED_DONE=false;
+  if(tvOn()) renderTV();
   const left=DATA.cutoff-Date.now();
   cd.hidden=false;
   cd.className='countdown'+(left<5*60000?' hot':(left<15*60000?' warn':''));
   $('#cdText').textContent=fmtLeft(left);
 }
 
+function tvOn(){ return /(^|[#?&])tv(\b|$)/i.test(location.hash) || /(^|[?&])tv(\b|$)/i.test(location.search); }
+let TVSIG='';
+
+function renderTV(){
+  document.body.classList.add('tvmode');
+  $('#btnTvExit').hidden=false;
+  const grid=$('#tvGrid'), closedBox=$('#tvClosed');
+  if(!DATA) return;
+  if(isClosed()){
+    grid.style.display='none';
+    let c=closedBox;
+    if(!c){ c=el('div','tvclosed','<h2>Rezultāti vairs nav pieejami</h2><p>Tiekamies finišā!</p>');
+            c.id='tvClosed'; $('#tvwrap').appendChild(c); }
+    c.hidden=false; $('#tvMeta').textContent=''; TVSIG=''; return;
+  }
+  if(closedBox) closedBox.hidden=true;
+  grid.style.display='';
+  const list=DATA.teams.filter(t=>t.total!==null).sort((a,b)=>(b.total-a.total)||(a.nr-b.nr));
+  const left=DATA.cutoff ? DATA.cutoff-Date.now() : 0;
+  $('#tvMeta').innerHTML=(left>0?'<b>vēl '+fmtLeft(left)+'</b> &nbsp;·&nbsp; ':'')+
+    list.length+' komandas &nbsp;·&nbsp; '+fmtAgo(LASTOK);
+  const sig=list.map(t=>t.nr+':'+t.total+':'+t.place+':'+t.done+':'+t.penalty).join('|');
+  if(sig===TVSIG) return;
+  TVSIG=sig;
+  grid.style.gridTemplateRows='repeat('+Math.ceil(list.length/2)+',1fr)';
+  grid.innerHTML='';
+  const nT=DATA.tasks.length;
+  list.forEach(t=>{
+    const p=t.place;
+    const d=el('div','tvrow'+(p&&p<=3?' p'+p:''));
+    d.innerHTML='<span class="tvpl">'+(p||'–')+'</span>'+
+      '<span class="tvwho"><span class="tvnm">'+esc(t.name)+'</span>'+
+      '<span class="tvsub">Nr.&nbsp;'+t.nr+' &nbsp;·&nbsp; '+t.done+' no '+nT+' uzd.'+
+      (t.penalty?' &nbsp;·&nbsp; sods −'+t.penalty:'')+'</span></span>'+
+      '<span class="tvpts">'+t.total+'</span>';
+    grid.appendChild(d);
+  });
+}
+
 function render(){
+  if(tvOn()){ renderTV(); return; }
+  document.body.classList.remove('tvmode');
+  $('#btnTvExit').hidden=true;
   const list=$('#list');
   const closed=isClosed();
   if(closed && view==='total') view='task';
@@ -599,6 +680,12 @@ function tab(which){
 $('#tab-total').onclick=()=>tab('total');
 $('#tab-task').onclick =()=>tab('task');
 $('#btnRefresh').onclick=load;
+$('#btnTv').onclick=()=>{ location.hash='tv'; };
+$('#btnTvExit').onclick=()=>{
+  history.replaceState(null,'',location.pathname+location.search);
+  TVSIG=''; render();
+};
+window.addEventListener('hashchange',()=>{ TVSIG=''; render(); });
 $('#hTeam').onclick=openPicker;
 $('#btnHide').onclick=()=>{ HIDEDONE=!HIDEDONE; lsSet(HIDE_KEY,HIDEDONE?'1':'0'); if(MAP) drawPins(); else syncMapBtns(); };
 $('#btnSkip').onclick=()=>{ ASKED=true; lsSet(TEAM_KEY,''); $('#tsheet').classList.remove('on'); };
