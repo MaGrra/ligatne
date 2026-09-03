@@ -59,6 +59,18 @@ nav button{
   background:rgba(255,255,255,.15);color:#fff;transition:background .15s;
 }
 nav button[aria-selected=true]{background:#fff;color:var(--forest)}
+.gnav{margin-top:10px}
+.gnav button{
+  flex:1;font-size:13px;letter-spacing:.04em;text-transform:uppercase;
+  padding:7px 6px;font-weight:800;opacity:.72}
+.gnav button[aria-selected=true]{opacity:1;background:var(--lime,#C6D93B);color:#14301f}
+.tvdots{letter-spacing:.18em}
+.pgroup{display:flex;gap:6px;margin:0 0 12px}
+.pgroup button{
+  flex:1;padding:8px 6px;border:0;border-radius:10px;font:inherit;font-size:13px;
+  font-weight:800;text-transform:uppercase;letter-spacing:.04em;
+  background:#e9eee9;color:#3a4a3a}
+.pgroup button.on{background:var(--forest,#0E3B2A);color:#fff}
 main{padding:14px 12px 32px;max-width:640px;margin:0 auto}
 .list{display:flex;flex-direction:column;gap:10px}
 
@@ -197,6 +209,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
     </div>
     <div class="status"><span class="dot" id="dot"></span><span id="stamp">ielādē…</span></div>
   </div>
+  <nav class="gnav" id="gnav" role="tablist"></nav>
   <nav role="tablist">
     <button role="tab" id="tab-total" aria-selected="true">Kopvērtējums</button>
     <button role="tab" id="tab-task" aria-selected="false">Uzdevumi un karte</button>
@@ -265,12 +278,34 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
 </div>
 
 <script>
-const SHEET_ID = '1L3Jw8csMEK3-du2xkBMA8yg6e32TWALuC7zG4d6FQHc';
-const GID = '761277242';
-const SRC = 'https://docs.google.com/spreadsheets/d/' + SHEET_ID + '/export?format=csv&gid=' + GID;
+/* Three groups, one public mirror, one tab per group.
+   Column indexes are NOT the same across groups -- Sporta carries 25 task
+   columns (22 SU + BINGO + two reserved), Tautas 23, Bauda 22 ticks plus a
+   bingo count -- so every index lives here and nowhere else. The audit asserts
+   these against the live sheet headers, so a column insert cannot silently
+   shift everything. */
+const SHEET_ID = '1c8sSEoA28Ki13tOdA8XdzBJ7dhc42AjJtKDHCHfYZAU';
+const GROUPS = [
+  {key:'Sporta', label:'Sporta',     gid:'0',
+   tFirst:2, tLast:26, iPen:27, iTotal:28, iPlace:29, iDone:30, iBingo:-1,
+   scored:true,  lo:101, hi:113},
+  {key:'Tautas', label:'Tautas',     gid:'110833847',
+   tFirst:2, tLast:24, iPen:25, iTotal:26, iPlace:27, iDone:28, iBingo:-1,
+   scored:true,  lo:1,   hi:82},
+  {key:'Bauda',  label:'Baudītāji',  gid:'404359574',
+   tFirst:2, tLast:23, iPen:-1, iTotal:-1, iPlace:-1, iDone:25, iBingo:24,
+   scored:false, lo:201, hi:232}
+];
+const I_CUTOFF = 33;            /* AH1 on every tab */
 const REFRESH_MS = 30000;
-const CACHE_KEY = 'ligatne-results-v3';
-const T_FIRST = 2, T_LAST = 22, I_PEN = 23, I_TOTAL = 24, I_PLACE = 25, I_CUTOFF = 29;
+const TV_CYCLE_MS = 20000;
+const TV_TOP = 20;              /* 82 Tautas teams will not fit a screen */
+const GROUP_KEY = 'swd-group-v1';
+const byKey = k => GROUPS.find(g=>g.key===k) || GROUPS[1];
+const srcFor = g => 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+
+                    '/export?format=csv&gid='+g.gid+'&t='+Date.now();
+const cacheKeyFor = g => 'swd-results-v1-'+g.key;
+const groupOfNr = nr => GROUPS.find(g=>nr>=g.lo&&nr<=g.hi) || null;
 
 function parseCSV(text){
   const rows=[]; let row=[], field='', q=false;
@@ -317,11 +352,11 @@ function parseWhen(v){
   return null;
 }
 
-function shape(rows){
+function shape(rows, g){
   const coordRow = rows[0] || [], head = rows[1] || [];
   const cutoff = parseWhen(coordRow[I_CUTOFF]);
   const tasks = [];
-  for(let c=T_FIRST;c<=T_LAST;c++){
+  for(let c=g.tFirst;c<=g.tLast;c++){
     const raw=(head[c]||'').trim(); if(!raw) continue;
     const sp=raw.indexOf(' ');
     tasks.push({col:c, code: sp<0?raw:raw.slice(0,sp), name: sp<0?raw:raw.slice(sp+1),
@@ -332,22 +367,57 @@ function shape(rows){
     const row=rows[r]; if(!row) continue;
     const nr=(row[0]||'').trim();
     if(!/^\d+$/.test(nr)) continue;
-    const scores={}; let done=0;
-    tasks.forEach(t=>{ const v=cellNum(row[t.col]); scores[t.col]=v; if(v!==null) done++; });
+    /* a numbered row with no name is not a team */
     const rawName=(row[1]||'').trim();
     if(!rawName) continue;
+    const scores={}; let done=0;
+    if(g.scored){
+      tasks.forEach(t=>{ const v=cellNum(row[t.col]); scores[t.col]=v; if(v!==null) done++; });
+    }else{
+      /* Bauda tabs hold a tick, not a score. The master already counts them, so
+         trust its count rather than re-deriving it from display strings. */
+      tasks.forEach(t=>{
+        const raw=(row[t.col]||'').trim().toUpperCase();
+        scores[t.col] = raw==='' ? null : (raw==='TRUE'||raw==='JĀ'||raw==='1');
+      });
+      done = cellNum(row[g.iDone]) || 0;
+    }
     teams.push({nr:+nr, name:rawName, named:true, scores, done,
-      penalty:cellNum(row[I_PEN])||0, total:cellNum(row[I_TOTAL]), place:cellNum(row[I_PLACE])});
+      bingo:  g.iBingo>=0 ? (cellNum(row[g.iBingo])||0) : null,
+      penalty:g.iPen  >=0 ? (cellNum(row[g.iPen])||0)   : 0,
+      total:  g.iTotal>=0 ? cellNum(row[g.iTotal])      : null,
+      place:  g.iPlace>=0 ? cellNum(row[g.iPlace])      : null});
   }
-  tasks.forEach(t=>{ t.visited = teams.filter(x=>x.scores[t.col]!==null).length; });
-  return {tasks, teams, cutoff};
+  if(!g.scored){
+    /* Bauda is not scored, so the place is derived here: attended first, then
+       bingo ticks. Same shared-place rule as everywhere else. */
+    const key = t => [t.done, t.bingo||0];
+    const better = (a,b) => a[0]>b[0] || (a[0]===b[0] && a[1]>b[1]);
+    teams.forEach(t=>{
+      const k=key(t);
+      t.place = (t.done||t.bingo) ? teams.filter(o=>better(key(o),k)).length+1 : null;
+    });
+  }
+  tasks.forEach(t=>{
+    t.visited = teams.filter(x=>x.scores[t.col]!==null && x.scores[t.col]!==false).length;
+  });
+  return {tasks, teams, cutoff, group:g};
 }
 
 let DATA=null, view='total';
-const TEAM_KEY='ligatne-myteam-v1', HIDE_KEY='ligatne-hidedone-v1';
+const ALL = {};                 /* key -> shaped data, filled as groups load */
+let GKEY = null;                /* which group is on screen */
+const TEAM_KEY='swd-myteam-v1', HIDE_KEY='swd-hidedone-v1';
 function lsGet(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }
 function lsSet(k,v){ try{ localStorage.setItem(k,v); }catch(e){} }
 let MYNR   = (()=>{ const v=lsGet(TEAM_KEY); return v ? +v : null; })();
+GKEY = (()=>{
+  const saved = lsGet(GROUP_KEY);
+  if(saved && GROUPS.some(g=>g.key===saved)) return saved;
+  const g = MYNR!=null ? groupOfNr(MYNR) : null;   /* team number implies group */
+  return g ? g.key : 'Tautas';
+})();
+const G = () => byKey(GKEY);
 let HIDEDONE = lsGet(HIDE_KEY)==='1';
 let ASKED  = lsGet(TEAM_KEY)!==null;
 let PROMPTED=false, CLOSED_DONE=false, LASTOK=Date.now();
@@ -363,7 +433,27 @@ function fmtAgo(ts){
   return m<60 ? 'pirms '+m+' min' : 'pirms '+Math.round(m/60)+' h';
 }
 
+function renderBauda(list){
+  const nT=DATA.tasks.length;
+  const ranked=DATA.teams.filter(t=>t.place!==null)
+    .sort((a,b)=>(b.done-a.done)||((b.bingo||0)-(a.bingo||0))||(a.nr-b.nr));
+  if(!ranked.length){ list.appendChild(el('div','empty','Vēl nav neviena apmeklējuma.')); return; }
+  const maxD=Math.max(...ranked.map(t=>t.done),1);
+  ranked.forEach(t=>{
+    const p=t.place, b=el('button','row'+(p&&p<=3?' p'+p:'')+(MYNR===t.nr?' mine':''));
+    b.innerHTML='<span class="place">'+(p||'–')+'</span>'+
+      '<span class="who"><span class="nm">'+esc(t.name)+'</span>'+
+      '<span class="sub">Nr.&nbsp;'+t.nr+' &nbsp;·&nbsp; '+t.done+' no '+nT+' uzdevumiem'+
+        (t.bingo!==null?' &nbsp;·&nbsp; '+t.bingo+' bingo':'')+'</span>'+
+      '<span class="bar"><i style="width:'+Math.max(3,t.done/maxD*100)+'%"></i></span></span>'+
+      '<span class="pts"><b>'+t.done+'</b><small>UZDEVUMI</small></span>';
+    b.onclick=()=>openTeam(t);
+    list.appendChild(b);
+  });
+}
+
 function renderTotal(list){
+  if(!DATA.group.scored){ renderBauda(list); return; }
   const nT=DATA.tasks.length;
   const ranked=DATA.teams.filter(t=>t.total!==null).map(t=>({t,val:t.total,place:t.place}))
     .sort((a,b)=>(b.val-a.val)||(a.t.nr-b.t.nr));
@@ -418,12 +508,35 @@ function tick(){
 
 function tvOn(){ return /(^|[#?&])tv(\b|$)/i.test(location.hash) || /(^|[?&])tv(\b|$)/i.test(location.search); }
 let TVSIG='';
+let TVI=0, TVTIMER=null;
+
+/* Which groups the TV rotates: only ones that actually have data, so a group
+   still waiting on its IMPORTRANGE clicks is skipped rather than showing an
+   empty screen for 20 seconds. */
+function tvGroups(){
+  const gs=GROUPS.filter(g=>ALL[g.key] && ALL[g.key].teams.length);
+  return gs.length?gs:[G()];
+}
+function tvStart(){
+  if(TVTIMER) return;
+  TVTIMER=setInterval(()=>{
+    const n=tvGroups().length;
+    if(n>1){ TVI=(TVI+1)%n; TVSIG=''; renderTV(); }
+  }, TV_CYCLE_MS);
+}
+function tvStop(){ if(TVTIMER){ clearInterval(TVTIMER); TVTIMER=null; } }
 
 function renderTV(){
   document.body.classList.add('tvmode');
   $('#btnTvExit').hidden=false;
+  tvStart();
+  const gs=tvGroups();
+  if(TVI>=gs.length) TVI=0;
+  const g=gs[TVI];
+  const D=ALL[g.key];
   const grid=$('#tvGrid'), closedBox=$('#tvClosed');
-  if(!DATA) return;
+  if(!D) return;
+  DATA=D; GKEY=g.key;                 /* so isClosed() and the clock agree */
   if(isClosed()){
     grid.style.display='none';
     let c=closedBox;
@@ -433,32 +546,43 @@ function renderTV(){
   }
   if(closedBox) closedBox.hidden=true;
   grid.style.display='';
-  const list=DATA.teams.filter(t=>t.total!==null).sort((a,b)=>(b.total-a.total)||(a.nr-b.nr));
-  const left=DATA.cutoff ? DATA.cutoff-Date.now() : 0;
+  const scored=g.scored;
+  let all = scored ? D.teams.filter(t=>t.total!==null).sort((a,b)=>(b.total-a.total)||(a.nr-b.nr))
+                   : D.teams.filter(t=>t.place!==null)
+                       .sort((a,b)=>(b.done-a.done)||((b.bingo||0)-(a.bingo||0))||(a.nr-b.nr));
+  const cut = all.length>TV_TOP;
+  const list = cut ? all.slice(0,TV_TOP) : all;
+  const left=D.cutoff ? D.cutoff-Date.now() : 0;
+  const dots=gs.map((x,i)=>i===TVI?'●':'○').join('');
+  $('.tvtitle').textContent = g.label.toUpperCase() + (cut?' · TOP '+TV_TOP:'');
   $('#tvMeta').innerHTML=(left>0?'<b>vēl '+fmtLeft(left)+'</b> &nbsp;·&nbsp; ':'')+
-    list.length+' komandas &nbsp;·&nbsp; '+fmtAgo(LASTOK);
-  const sig=list.map(t=>t.nr+':'+t.total+':'+t.place+':'+t.done+':'+t.penalty).join('|');
+    all.length+' komandas &nbsp;·&nbsp; '+fmtAgo(D.stamp||LASTOK)+
+    (gs.length>1?' &nbsp;·&nbsp; <span class="tvdots">'+dots+'</span>':'');
+  const sig=g.key+'|'+list.map(t=>t.nr+':'+t.total+':'+t.place+':'+t.done+':'+t.bingo+':'+t.penalty).join('|');
   if(sig===TVSIG) return;
   TVSIG=sig;
   grid.style.gridTemplateRows='repeat('+Math.ceil(list.length/2)+',1fr)';
   grid.innerHTML='';
-  const nT=DATA.tasks.length;
+  const nT=D.tasks.length;
   list.forEach(t=>{
     const p=t.place;
     const d=el('div','tvrow'+(p&&p<=3?' p'+p:''));
     d.innerHTML='<span class="tvpl">'+(p||'–')+'</span>'+
       '<span class="tvwho"><span class="tvnm">'+esc(t.name)+'</span>'+
       '<span class="tvsub">Nr.&nbsp;'+t.nr+' &nbsp;·&nbsp; '+t.done+' no '+nT+' uzd.'+
+      (!scored && t.bingo!==null ? ' &nbsp;·&nbsp; '+t.bingo+' bingo':'')+
       (t.penalty?' &nbsp;·&nbsp; sods −'+t.penalty:'')+'</span></span>'+
-      '<span class="tvpts">'+t.total+'</span>';
+      '<span class="tvpts">'+(scored?t.total:t.done)+'</span>';
     grid.appendChild(d);
   });
 }
 
 function render(){
   if(tvOn()){ renderTV(); return; }
+  tvStop();
   document.body.classList.remove('tvmode');
   $('#btnTvExit').hidden=true;
+  syncGroupNav();
   const list=$('#list');
   const closed=isClosed();
   if(closed && view==='total') view='task';
@@ -503,27 +627,73 @@ function setStatus(ts, ok){
   $('#foot').textContent='Atjaunojas automātiski ik 30 sekundes.';
 }
 
-async function load(){
+/* Fetch one group. Returns true on a live fetch, false if it fell back to the
+   cached copy -- the caller decides what that means for the status dot. */
+async function loadGroup(g){
   try{
-    const res=await fetch(SRC+'&t='+Date.now(),{cache:'no-store'});
+    const res=await fetch(srcFor(g),{cache:'no-store'});
     if(!res.ok) throw new Error(res.status);
     const text=await res.text();
-    DATA=shape(parseCSV(text));
-    const stamp=Date.now();
-    try{ localStorage.setItem(CACHE_KEY,JSON.stringify({stamp,text})); }catch(e){}
-    render(); tick(); if(MAP) drawPins(); setStatus(stamp,true); maybeAsk();
+    ALL[g.key]=shape(parseCSV(text),g);
+    ALL[g.key].stamp=Date.now();
+    try{ localStorage.setItem(cacheKeyFor(g),JSON.stringify({stamp:ALL[g.key].stamp,text})); }catch(e){}
+    return true;
   }catch(e){
-    try{
-      const c=JSON.parse(localStorage.getItem(CACHE_KEY)||'null');
-      if(c){ DATA=shape(parseCSV(c.text)); render(); tick(); setStatus(c.stamp,false); maybeAsk(); return; }
-    }catch(_){}
-    setStatus(Date.now(),false);
-    if(!DATA) $('#list').innerHTML='<div class="empty">Nevar ielādēt rezultātus.<br>Pārbaudi interneta savienojumu.</div>';
+    if(!ALL[g.key]){
+      /* last good response survives a dropout, so a forest shows stale data
+         with an amber dot instead of an empty screen */
+      try{
+        const c=JSON.parse(localStorage.getItem(cacheKeyFor(g))||'null');
+        if(c){ ALL[g.key]=shape(parseCSV(c.text),g); ALL[g.key].stamp=c.stamp; }
+      }catch(_){}
+    }
+    return false;
   }
+}
+
+async function load(){
+  /* TV cycles all three, so all three have to stay fresh. A phone only pays
+     for the board it is looking at. */
+  const want = tvOn() ? GROUPS : [G()];
+  const oks = await Promise.all(want.map(loadGroup));
+  const ok = oks.some(Boolean);
+  DATA = ALL[GKEY] || null;
+  const stamp = DATA && DATA.stamp ? DATA.stamp : Date.now();
+  render(); tick(); if(MAP) drawPins(); setStatus(stamp, ok); maybeAsk();
+  if(!DATA) $('#list').innerHTML='<div class="empty">Nevar ielādēt rezultātus.<br>Pārbaudi interneta savienojumu.</div>';
+}
+
+/* Switching group: show whatever is cached immediately, then refresh it. */
+async function setGroup(key){
+  if(GKEY===key) return;
+  GKEY=key; lsSet(GROUP_KEY,key);
+  DATA=ALL[key]||null;
+  TVSIG=''; MAPKEY='';
+  syncGroupNav(); render(); tick();
+  await loadGroup(byKey(key));
+  DATA=ALL[key]||null;
+  syncGroupNav(); render(); tick(); if(MAP) drawPins();
+  if(DATA&&DATA.stamp) setStatus(DATA.stamp,true);
+}
+
+function syncGroupNav(){
+  const nav=$('#gnav'); if(!nav) return;
+  if(!nav.childElementCount){
+    GROUPS.forEach(g=>{
+      const b=el('button','',esc(g.label));
+      b.setAttribute('role','tab'); b.dataset.g=g.key;
+      b.onclick=()=>setGroup(g.key);
+      nav.appendChild(b);
+    });
+  }
+  [...nav.children].forEach(b=>{
+    b.ariaSelected = String(b.dataset.g===GKEY);
+  });
 }
 
 /* ---------------- map ---------------- */
 let MAP=null, PINS=null, MEDOT=null, MERING=null, WATCH=null, LEAFLET_LOADING=false;
+let MAPKEY='';        /* which group's pins are currently drawn */
 let LOCBTN=null, FOLLOW=false;
 
 function loadLeaflet(){
@@ -556,6 +726,8 @@ async function initMap(){
 
 function drawPins(){
   if(!MAP||!DATA) return;
+  const switched = MAPKEY!==GKEY;
+  MAPKEY=GKEY;
   PINS.clearLayers();
   const me=myTeam();
   let doneN=0;
@@ -581,6 +753,7 @@ function drawPins(){
     : !me ? 'Izvēlies komandu, lai redzētu, kuri uzdevumi tev vēl priekšā.'
     : doneN+' no '+n+' padarīti'+(HIDEDONE?' — paslēpti.':' — pelēkie.')+' Dati '+fmtAgo(LASTOK)+'.';
   syncMapBtns();
+  if(switched) fitPins();
 }
 
 function syncTeamChip(){
@@ -602,11 +775,25 @@ function syncMapBtns(){
 function openPicker(){
   if(!DATA) return;
   PROMPTED=true;
+  /* 127 teams across three classes, so the class has to be pickable here --
+     otherwise a Sporta team is asked to find itself in the Tautas list. */
+  let gsel=$('#pgroup');
+  if(!gsel){
+    gsel=el('div','pgroup'); gsel.id='pgroup';
+    $('#tpick').parentNode.insertBefore(gsel,$('#tpick'));
+  }
+  gsel.innerHTML='';
+  GROUPS.forEach(g=>{
+    const b=el('button', g.key===GKEY?'on':'', esc(g.label));
+    b.onclick=async()=>{ await setGroup(g.key); openPicker(); };
+    gsel.appendChild(b);
+  });
   const box=$('#tpick'); box.innerHTML='';
   DATA.teams.filter(t=>t.named).forEach(t=>{
     const b=el('button', MYNR===t.nr?'on':'', '<small>Nr.&nbsp;'+t.nr+'</small>'+esc(t.name));
     b.onclick=()=>{
       MYNR=t.nr; ASKED=true; lsSet(TEAM_KEY,String(t.nr));
+      const g=groupOfNr(t.nr); if(g) lsSet(GROUP_KEY,g.key);
       $('#tsheet').classList.remove('on');
       render(); if(MAP) drawPins();
     };
@@ -685,7 +872,12 @@ $('#btnTvExit').onclick=()=>{
   history.replaceState(null,'',location.pathname+location.search);
   TVSIG=''; render();
 };
-window.addEventListener('hashchange',()=>{ TVSIG=''; render(); });
+window.addEventListener('hashchange',()=>{
+  TVSIG=''; TVI=0; render();
+  /* TV cycles all three groups, and on a phone only one was ever fetched --
+     pull the rest now instead of leaving two panes empty until the next tick */
+  if(tvOn()) load();
+});
 $('#hTeam').onclick=openPicker;
 $('#btnHide').onclick=()=>{ HIDEDONE=!HIDEDONE; lsSet(HIDE_KEY,HIDEDONE?'1':'0'); if(MAP) drawPins(); else syncMapBtns(); };
 $('#btnSkip').onclick=()=>{ ASKED=true; lsSet(TEAM_KEY,''); $('#tsheet').classList.remove('on'); };

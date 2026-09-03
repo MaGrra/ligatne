@@ -1,4 +1,4 @@
-# Rezultāti — Līgatne 2026
+# Rezultāti — Swedbank Līgatne 05.09.2026
 
 Mobile-first live leaderboard. One static file, no build step, no dependencies.
 
@@ -13,10 +13,27 @@ Refreshes every 30 s, and again whenever the phone comes back to the tab.
 Last good response is kept in localStorage, so a dropout shows stale data with an
 amber dot instead of an empty screen.
 
+## Three groups (2026-09-05)
+One URL, a switcher in the header, one mirror tab per group. The default group
+comes from the saved team number (1–82 Tautas, 101–113 Sporta, 201–232
+Baudītāji), so a team lands on its own board without touching anything.
+
+A phone fetches **only the group on screen**. Switching shows the cached copy
+at once and refreshes it behind that. TV mode fetches all three, because it
+cycles them.
+
+**Baudītāji are not scored.** Their board shows attended tasks and bingo ticks,
+ranked by attended then bingo — no points anywhere. The place is computed in
+the page, not read from the sheet, because the master's Bauda tab has no Kopā
+or Vieta column at all.
+
 ## Requirements — READ THIS
 The page reads a **values-only public mirror**, NOT the master.
 
-    REZULTĀTI (publiskais)  1L3Jw8csMEK3-du2xkBMA8yg6e32TWALuC7zG4d6FQHc  tab DATI
+    REZULTĀTI (publiskais)  1c8sSEoA28Ki13tOdA8XdzBJ7dhc42AjJtKDHCHfYZAU
+      Sporta  gid 0
+      Tautas  gid 110833847
+      Bauda   gid 404359574
 
 Why: the master's cells contain IMPORTRANGE formulas naming all 21 task file ids,
 and those task files are deliberately "anyone with the link can EDIT" so referees
@@ -40,18 +57,28 @@ publishing outside the domain (401 anonymously). Plain link-sharing does work.
 ## Configuration
 Top of the `<script>` block in `index.html`:
 
-    SHEET_ID    the KOPVĒRTĒJUMS file id
-    GID         813088766  (the master tab; LOQUIZ tab is 582382323)
-    REFRESH_MS  30000
+    SHEET_ID     the public mirror file id
+    GROUPS[]     one entry per group: gid + every column index it uses
+    REFRESH_MS   30000
+    TV_CYCLE_MS  20000   how long each group holds the TV
+    TV_TOP       20      82 Tautas teams will not fit one screen
 
-## Column contract (must match the master)
-    0   Nr
-    1   Komanda
-    2..22   the 21 task columns, header "SU4 Skulptūru dārzs"
-    23  Sods (-)
-    24  Kopā
-    25  Vieta
-    26  Apmeklēti uzd.
+## Column contract (must match the master) — DIFFERENT PER GROUP
+This is the thing most likely to break. Sporta carries 25 task columns (22 SU +
+BINGO + two reserved for the race), Tautas 23, Bauda 22 ticks plus a bingo
+count, so the summary columns sit at different indexes in each tab:
+
+    group    task cols   Sods  Kopā  Vieta  Apmeklēti  Bingo   rows
+    Sporta   2..26        27    28     29      30        --    3..30
+    Tautas   2..24        25    26     27      28        --    3..95
+    Bauda    2..23        --    --     --      25        24    3..50
+
+Every one of those lives in `GROUPS[]` and nowhere else. Adding or removing a
+task column shifts the summary columns for that group — update the entry.
+Run `python3 v3/audit_page.py` to assert them against the live sheet headers.
+
+Cutoff moved to **AH1 (index 33)**, and is written to **all three** master tabs,
+because each group's board only ever reads its own tab.
 
 Task names come from row 2, so renaming a task in the master updates the page.
 Adding or removing a task column shifts the last four — update the constants.
@@ -105,7 +132,14 @@ Same link plus `#tv`:  https://magrra.github.io/ligatne/#tv
 There is also a **TV režīms** button in the footer, and an **Iziet no TV**
 button bottom-right while in TV mode.
 
-All 26 teams on one screen, no scrolling: a CSS grid filled column-first,
+**It rotates the three groups every 20 s, unattended** — Sporta (all 13 fit),
+then Tautas TOP 20, then Baudītāji TOP 20. Dots in the header line show which
+group is up. A group with no data yet is skipped rather than showing an empty
+screen for 20 seconds, so it behaves sensibly before the IMPORTRANGE clicks are
+done. Entering `#tv` fetches all three immediately instead of waiting for the
+next 30 s tick.
+
+Teams on one screen, no scrolling: a CSS grid filled column-first,
 `ceil(n/2)` rows, so ranks 1-13 run down the left column and 14-26 down the
 right. Each row carries the same facts as a mobile row — place, team name,
 `Nr. X · N no 21 uzd.`, penalty if any, and points. Teams on 0 stay listed.
