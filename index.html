@@ -3,17 +3,30 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#0E3B2A">
+<meta name="theme-color" content="#F15735">
 <title>Rezultāti · Līgatnes acīte</title>
 <style>
+/* Palette taken from the event banner by sampling it, not by eye:
+   #F15735 the Swedbank orange (the dominant brand colour), #1368B2 the blue
+   frame, #162C22 the dark green of "SPORTISKAIS IZAICINĀJUMS".
+
+   Contrast is the constraint. #F15735 against white is 3.41:1 -- fine as a
+   fill and for large bold text, but it FAILS 4.5:1 for small text either way.
+   So --brand is for fills and big type, and --brand-dk (#C93A18, same hue,
+   5.12:1) carries any small text that sits on or in the brand colour. */
 :root{
-  --forest:#0E3B2A; --forest2:#1E6B41; --leaf:#5BA83C; --leaf-l:#8CC63F;
-  --navy:#123A6B; --sky:#4FA8E0; --river:#2E7CB8;
-  --sand:#C9702F; --brick:#A8391F; --tan:#D9A05B;
-  --bg:#F3F6F1; --card:#fff; --ink:#12211A; --muted:#66796C; --line:#DFE7DC;
-  --g1:#D9A61C; --g2:#9AA8AE; --g3:#B3743A;
-  --shadow:0 1px 2px rgba(14,59,42,.06),0 10px 26px -14px rgba(14,59,42,.30);
+  --brand:#F15735; --brand-dk:#C93A18; --brand-l:#F98A6A; --brand-pale:#FDEDE8;
+  --brand-chip:#A82B0C;   /* chip text on --brand-pale: 4.50:1 was on the line */
+  --blue:#1368B2; --blue-l:#649ACC;
+  --forest:#162C22; --forest2:#2C4B3B;
+  --leaf:#F15735; --leaf-l:#F98A6A;      /* progress bars now read as brand */
+  --navy:#1368B2; --sky:#649ACC; --river:#1368B2;
+  --sand:#F07038; --brick:#C93A18; --tan:#F09C76;
+  --bg:#F7F4F1; --card:#fff; --ink:#162C22; --muted:#6E6A66; --line:#E7E0DA;
+  --g1:#F15735; --g2:#9AA8AE; --g3:#BC6B5A;
+  --shadow:0 1px 2px rgba(22,44,34,.06),0 10px 26px -14px rgba(201,58,24,.28);
 }
+
 @media (prefers-color-scheme:dark){
   :root{--bg:#0B1712;--card:#12211A;--ink:#E9F1EA;--muted:#8DA396;--line:#1F332A;
         --forest:#0B2E21;--forest2:#1E6B41;--shadow:0 1px 2px rgba(0,0,0,.45),0 10px 26px -14px rgba(0,0,0,.7);}
@@ -25,18 +38,11 @@ body{
   font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,"Helvetica Neue",Arial,sans-serif;
   -webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom);
 }
-.banner{background:var(--forest);line-height:0;padding-top:env(safe-area-inset-top)}
+.banner{background:var(--brand-dk);line-height:0;padding-top:env(safe-area-inset-top)}
 .banner img{width:100%;height:auto;display:block}
-.stripes{height:7px;display:flex}
-.stripes i{flex:1}
-.stripes i:nth-child(1){background:var(--navy)}
-.stripes i:nth-child(2){background:var(--leaf)}
-.stripes i:nth-child(3){background:#fff}
-.stripes i:nth-child(4){background:var(--navy)}
-
 header{
   position:sticky;top:0;z-index:20;
-  background:linear-gradient(165deg,var(--forest),var(--forest2));
+  background:linear-gradient(165deg,var(--brand),var(--brand-dk));
   color:#fff;padding:11px 16px 11px;
   box-shadow:0 2px 14px rgba(0,0,0,.22);
 }
@@ -47,36 +53,37 @@ h1{margin:0;font-size:18px;font-weight:800;letter-spacing:.01em;text-transform:u
   font:inherit;font-size:12.5px;font-weight:700;padding:5px 10px;cursor:pointer;flex:0 1 auto;
   overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .hteam:active{background:rgba(255,255,255,.32)}
-.status{display:flex;align-items:center;gap:6px;font-size:12px;opacity:.92;white-space:nowrap}
-.dot{width:8px;height:8px;border-radius:50%;background:var(--leaf-l);animation:pulse 2.4s infinite}
-.dot.stale{background:#F2C14E;animation:none}
-.dot.off{background:#E2705A;animation:none}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(140,198,63,.65)}70%{box-shadow:0 0 0 8px rgba(140,198,63,0)}100%{box-shadow:0 0 0 0 rgba(140,198,63,0)}}
+.status{background:rgba(0,0,0,.24);border-radius:999px;padding:3px 9px;display:flex;align-items:center;gap:6px;font-size:12px;opacity:.92;white-space:nowrap}
+.dot{width:8px;height:8px;border-radius:50%;background:#fff;animation:pulse 2.4s infinite}
+.dot.stale{background:#FFD166;animation:none}
+.dot.off{background:#3A1A12;animation:none}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(255,255,255,.75)}70%{box-shadow:0 0 0 8px rgba(255,255,255,0)}100%{box-shadow:0 0 0 0 rgba(255,255,255,0)}}
 nav{display:flex;gap:6px;margin-top:12px}
 nav button{
   flex:1;appearance:none;border:0;border-radius:999px;padding:10px 6px;
   font:inherit;font-size:13.5px;font-weight:700;cursor:pointer;letter-spacing:.01em;
   background:rgba(255,255,255,.15);color:#fff;transition:background .15s;
 }
-nav button[aria-selected=true]{background:#fff;color:var(--forest)}
+nav button[aria-selected=true]{background:#fff;color:var(--brand-dk)}
 .gnav{margin-top:10px}
 .gnav button{
   flex:1;font-size:13px;letter-spacing:.04em;text-transform:uppercase;
   padding:7px 6px;font-weight:800;opacity:.72}
-.gnav button[aria-selected=true]{opacity:1;background:var(--lime,#C6D93B);color:#14301f}
+.gnav button[aria-selected=true]{opacity:1;background:#fff;color:var(--brand-dk)}
 .tvdots{letter-spacing:.18em}
+.frame{height:5px;background:var(--blue)}
 .dnote{font-size:12px;color:#6b7a6f;padding:8px 4px 2px;line-height:1.35}
 .lhead{
   font-size:11px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;
   color:#6b7a6f;padding:14px 4px 6px}
 .list .row.done{opacity:.62}
-.list .row.done .code{background:#2f7d4f;color:#fff}
+.list .row.done .code{background:var(--brand-dk);color:#fff}
 .pgroup{display:flex;gap:6px;margin:0 0 12px}
 .pgroup button{
   flex:1;padding:8px 6px;border:0;border-radius:10px;font:inherit;font-size:13px;
   font-weight:800;text-transform:uppercase;letter-spacing:.04em;
   background:#e9eee9;color:#3a4a3a}
-.pgroup button.on{background:var(--forest,#0E3B2A);color:#fff}
+.pgroup button.on{background:var(--brand-dk);color:#fff}
 main{padding:14px 12px 32px;max-width:640px;margin:0 auto}
 .list{display:flex;flex-direction:column;gap:10px}
 
@@ -98,13 +105,13 @@ button.row:active{transform:scale(.985)}
   flex:0 0 auto;min-width:48px;padding:0 9px;height:36px;border-radius:11px;
   display:flex;align-items:center;justify-content:center;
   font-weight:800;font-size:12.5px;letter-spacing:.02em;
-  background:rgba(91,168,60,.14);color:var(--forest2);
+  background:var(--brand-pale);color:var(--brand-chip);
 }
 .who{flex:1;min-width:0;display:flex;flex-direction:column;gap:5px}
 .nm{font-weight:600;font-size:16.5px;line-height:1.25;letter-spacing:-.005em;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .sub{font-size:12.5px;line-height:1.3;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bar{height:4px;border-radius:2px;background:var(--line);overflow:hidden;margin-top:1px}
-.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--forest2),var(--leaf));border-radius:2px}
+.bar i{display:block;height:100%;background:linear-gradient(90deg,var(--brand-dk),var(--brand));border-radius:2px}
 .pts{flex:0 0 auto;display:flex;flex-direction:column;align-items:flex-end;gap:2px;font-variant-numeric:tabular-nums}
 .pts b{font-weight:800;font-size:20px;line-height:1;letter-spacing:-.02em}
 .pts small{font-size:10.5px;font-weight:700;color:var(--muted);letter-spacing:.03em}
@@ -116,22 +123,22 @@ button.row:active{transform:scale(.985)}
 #mapwrap{margin-bottom:14px}
 .mapctl a{width:34px;height:34px;line-height:34px;text-align:center;font-size:18px;
   background:#fff;color:#12211A;font-weight:700}
-.mapctl a.on{background:var(--forest2);color:#fff}
+.mapctl a.on{background:var(--brand-dk);color:#fff}
 .maptools{display:flex;gap:8px;margin:10px 0 0}
 .mbtn{flex:1;appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);
   font:inherit;font-size:14px;font-weight:650;padding:11px 10px;border-radius:12px;cursor:pointer;
   box-shadow:var(--shadow)}
-.mbtn.on{background:var(--forest2);color:#fff;border-color:var(--forest2)}
+.mbtn.on{background:var(--brand-dk);color:#fff;border-color:var(--brand-dk)}
 .mnote{font-size:12.5px;color:var(--muted);margin-top:10px;text-align:center;line-height:1.4}
 .pin{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;
-  background:var(--forest2);color:#fff;font:700 10.5px/1 -apple-system,sans-serif;
+  background:var(--brand-dk);color:#fff;font:700 10.5px/1 -apple-system,sans-serif;
   border:2.5px solid #fff;box-shadow:0 2px 6px rgba(0,0,0,.35)}
 .pin.done{background:#cdd6d1;color:#78867f;border-color:#e4eae7;box-shadow:none}
 .row.mine{outline:2px solid var(--leaf);outline-offset:-2px}
 .tpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(132px,1fr));gap:8px;padding:2px 0 14px}
 .tpick button{appearance:none;border:1px solid var(--line);background:var(--card);color:var(--ink);
   border-radius:12px;padding:10px 11px;font:600 14.5px/1.25 inherit;text-align:left;cursor:pointer}
-.tpick button.on{background:var(--forest2);color:#fff;border-color:var(--forest2)}
+.tpick button.on{background:var(--brand-dk);color:#fff;border-color:var(--brand-dk)}
 .tpick button small{display:block;font-weight:700;opacity:.6;font-size:11.5px;margin-bottom:3px}
 .me{width:18px;height:18px;border-radius:50%;background:var(--river);border:3px solid #fff;
   box-shadow:0 0 0 2px rgba(46,124,184,.4),0 2px 6px rgba(0,0,0,.4)}
@@ -150,7 +157,7 @@ body.tvmode #tvwrap{display:flex;flex-direction:column;height:100vh;padding:2.4v
 .tvrow.p1{border-left:.45vw solid var(--g1)}
 .tvrow.p2{border-left:.45vw solid var(--g2)}
 .tvrow.p3{border-left:.45vw solid var(--g3)}
-.tvpl{flex:0 0 auto;min-width:2.8vw;text-align:center;font-weight:800;color:var(--forest2);
+.tvpl{flex:0 0 auto;min-width:2.8vw;text-align:center;font-weight:800;color:var(--brand-dk);
   font-size:clamp(15px,2.9vh,40px);font-variant-numeric:tabular-nums}
 .tvwho{flex:1 1 auto;min-width:0}
 .tvnm{display:block;font-size:clamp(12px,2.3vh,31px);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -172,12 +179,12 @@ body.tvmode #tvwrap{display:flex;flex-direction:column;height:100vh;padding:2.4v
 .grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:8px auto 14px}
 .phead{display:flex;align-items:center;gap:14px;padding:0 4px 14px}
 .phead .who{gap:4px}
-.phead .big{font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--forest2)}
+.phead .big{font-size:27px;font-weight:800;letter-spacing:-.02em;line-height:1;color:var(--brand-dk)}
 .tline{display:flex;align-items:center;gap:12px;padding:12px 13px;background:var(--card);
   border:1px solid var(--line);border-radius:12px;margin-bottom:7px}
 .tline.none{opacity:.45}
 .tag{flex:0 0 auto;min-width:46px;text-align:center;font-size:11.5px;font-weight:800;padding:4px 7px;
-  border-radius:7px;background:rgba(91,168,60,.13);color:var(--forest2);letter-spacing:.02em}
+  border-radius:7px;background:var(--brand-pale);color:var(--brand-chip);letter-spacing:.02em}
 .tname{flex:1;min-width:0;font-size:14.5px;line-height:1.3;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .tval{flex:0 0 auto;font-weight:700;font-size:15.5px;font-variant-numeric:tabular-nums;white-space:nowrap}
 footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30px}
@@ -205,7 +212,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
 <body>
 
 <div class="banner"><img src="banner.jpg" alt="Līgatnes acīte" fetchpriority="high"></div>
-<div class="stripes"><i></i><i></i><i></i><i></i></div>
+<div class="frame"></div>
 
 <header>
   <div class="h-top">

@@ -3,6 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#F15735">
 <!-- UNLISTED, NOT PRIVATE. GitHub Pages serves this to anyone who has the URL.
      robots/noindex keeps it out of search engines and nothing links to it, but
      it is obscurity, not access control. -->
@@ -10,25 +11,29 @@
 <meta name="referrer" content="no-referrer">
 <title>Iekšējais · TOP 3 pa uzdevumiem</title>
 <style>
-:root{--ink:#12211a;--forest:#0E3B2A;--line:#dfe6e0;--dim:#6b7a6f;--gold:#b8912f}
+/* same sampled palette as the public board */
+:root{--ink:#162C22;--brand:#F15735;--brand-dk:#C93A18;--brand-pale:#FDEDE8;
+      --blue:#1368B2;--line:#E7E0DA;--dim:#6E6A66;--gold:#F15735}
 *{box-sizing:border-box}
 body{margin:0;background:#f6f8f6;color:var(--ink);
   font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-header{position:sticky;top:0;z-index:5;background:var(--forest);color:#fff;padding:12px 14px}
+header{position:sticky;top:0;z-index:5;
+  background:linear-gradient(165deg,var(--brand),var(--brand-dk));
+  color:#fff;padding:12px 14px}
 .h1{font-size:17px;font-weight:800;letter-spacing:.01em}
 .meta{font-size:12px;opacity:.85;margin-top:3px}
-.warn{background:#7a2d2d;color:#fff;font-size:12px;padding:7px 14px}
+.warn{background:#3A1A12;color:#fff;font-size:12px;padding:7px 14px}
 nav{display:flex;gap:6px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line);
   position:sticky;top:66px;z-index:4}
 nav button{flex:1;padding:8px 6px;border:0;border-radius:9px;font:inherit;font-size:13px;
   font-weight:800;text-transform:uppercase;letter-spacing:.04em;background:#e9eee9;color:#3a4a3a}
-nav button[aria-selected=true]{background:var(--forest);color:#fff}
+nav button[aria-selected=true]{background:var(--brand-dk);color:#fff}
 main{padding:12px 10px 60px;max-width:1100px;margin:0 auto}
 .grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(310px,1fr))}
 .card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
 .ct{padding:9px 12px;border-bottom:1px solid var(--line);display:flex;
   justify-content:space-between;align-items:baseline;gap:8px}
-.cc{font-weight:800;font-size:13px;color:var(--forest)}
+.cc{font-weight:800;font-size:13px;color:var(--brand-dk)}
 .cn{font-size:12px;color:var(--dim);text-align:right;flex:1}
 .r{display:flex;align-items:center;gap:9px;padding:7px 12px;border-top:1px solid #f0f3f0}
 .r:first-of-type{border-top:0}
