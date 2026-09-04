@@ -1,0 +1,4 @@
+# The internal page is unlisted, not access-controlled. This keeps it out of
+# search results; it does NOT stop anyone who has the URL.
+User-agent: *
+Disallow: /

@@ -83,6 +83,15 @@ because each group's board only ever reads its own tab.
 Task names come from row 2, so renaming a task in the master updates the page.
 Adding or removing a task column shifts the last four — update the constants.
 
+## The task list under the map
+Counts are **scoped to the class on screen** — a Sporta team sees how many of
+the 13 have been to a task, not how many of all 127. `DATA` is already just
+that group, so this is true by construction.
+
+Tasks the picked team has finished move to the **bottom** under a `PADARĪTS`
+heading with a `✓` and the team's own score; what is still to do sits at the top
+under `VĒL JĀDARA`. With no team picked it says so rather than guessing.
+
 ## Karte (map tab)
 Coordinates live in **row 1 of KOPVĒRTĒJUMS**, one cell per task column (C1:W1),
 written as `lat,lng` — e.g. `57.2318,25.0389`. They ride along in the same CSV,
@@ -162,9 +171,32 @@ Nothing about the mobile view changed. `render()` returns to `renderTV()` on the
 first line only when the flag is present; with no flag the original path runs
 untouched.
 
+## Internal top-3 page (unlisted)
+`iekseja-be6f4cff51bc.html` — top 3 per task, per class, for picking shout-outs
+at the ceremony. Reads the SAME mirror as the board and does the ranking in the
+browser, so there is no second data path.
+
+**It is UNLISTED, not private.** GitHub Pages serves it to anyone with the URL.
+The filename is unguessable, `robots.txt` and a `noindex` meta keep it out of
+search, and nothing links to it — but that is obscurity. The page says so on
+itself. If it ever needs real access control, the master spreadsheet is already
+private to the three organisers and is the place to put it.
+
+- Baudītāji are absent on purpose: they have no scores, only attendance ticks.
+- **It ignores the cutoff.** Shout-outs happen at the ceremony, after the public
+  board has closed, so a page that closed with it would be shut when needed.
+- Ties share a place, same rule as the scoring. A tie is capped at 6 printed
+  rows with "+ vēl N ar tādu pašu rezultātu".
+- **SU1 and SU3 have nothing to single out** — flat 20p with no bonus, so on
+  live data 62 and 58 Tautas teams tie for first. The card states that outright
+  instead of printing a meaningless top 3.
+
 ## Team picker + greyed-out pins
-On first open the page asks "Kura ir tava komanda?" and the choice is kept in
-localStorage (`ligatne-myteam-v1`). On the map, every task that team has
+On first open the page asks in **two steps**: which class (Sporta / Tautas /
+Baudītāji), then which team within it. 127 names in one list is not a choice
+anyone can make on a phone; the class narrows it to 13, 82 or 32 and the second
+step is a normal scroll. `← Cita klase` goes back. The choice is kept in
+localStorage (`swd-myteam-v1`, `swd-group-v1`). On the map, every task that team has
 already been scored for turns **grey with no shadow**; the pin stays put and its
 popup shows the points. `Slēpt padarītos` hides them outright if a team prefers
 the shorter map; that toggle is remembered too (`ligatne-hidedone-v1`).

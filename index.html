@@ -65,6 +65,11 @@ nav button[aria-selected=true]{background:#fff;color:var(--forest)}
   padding:7px 6px;font-weight:800;opacity:.72}
 .gnav button[aria-selected=true]{opacity:1;background:var(--lime,#C6D93B);color:#14301f}
 .tvdots{letter-spacing:.18em}
+.lhead{
+  font-size:11px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;
+  color:#6b7a6f;padding:14px 4px 6px}
+.list .row.done{opacity:.62}
+.list .row.done .code{background:#2f7d4f;color:#fff}
 .pgroup{display:flex;gap:6px;margin:0 0 12px}
 .pgroup button{
   flex:1;padding:8px 6px;border:0;border-radius:10px;font:inherit;font-size:13px;
@@ -268,11 +273,12 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
     <div class="grab"></div>
     <div class="phead">
       <div class="who">
-        <div class="nm" style="font-size:18px">Kura ir tava komanda?</div>
-        <div class="sub">Kartē tavi padarītie uzdevumi kļūs pelēki.</div>
+        <div class="nm" id="pTitle" style="font-size:18px">Kurā klasē tu startē?</div>
+        <div class="sub" id="pSub">Izvēlies klasi, tad ritini un izvēlies komandu.</div>
       </div>
     </div>
-    <div class="tpick" id="tpick"></div>
+    <div class="tpick" id="tpick" hidden></div>
+    <button class="mbtn" id="btnBack" hidden style="margin-bottom:14px">← Cita klase</button>
     <button class="mbtn" id="btnSkip" style="margin-bottom:14px">Izlaist</button>
   </div>
 </div>
@@ -287,7 +293,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
 const SHEET_ID = '1c8sSEoA28Ki13tOdA8XdzBJ7dhc42AjJtKDHCHfYZAU';
 const GROUPS = [
   {key:'Sporta', label:'Sporta',     gid:'0',
-   tFirst:2, tLast:26, iPen:27, iTotal:28, iPlace:29, iDone:30, iBingo:-1,
+   tFirst:2, tLast:27, iPen:28, iPen2:29, iTotal:30, iPlace:31, iDone:32, iBingo:-1,
    scored:true,  lo:101, hi:113},
   {key:'Tautas', label:'Tautas',     gid:'110833847',
    tFirst:2, tLast:24, iPen:25, iTotal:26, iPlace:27, iDone:28, iBingo:-1,
@@ -296,7 +302,7 @@ const GROUPS = [
    tFirst:2, tLast:23, iPen:-1, iTotal:-1, iPlace:-1, iDone:25, iBingo:24,
    scored:false, lo:201, hi:232}
 ];
-const I_CUTOFF = 33;            /* AH1 on every tab */
+const I_CUTOFF = 38;            /* AM1 on every tab */
 const REFRESH_MS = 30000;
 const TV_CYCLE_MS = 20000;
 const TV_TOP = 20;              /* 82 Tautas teams will not fit a screen */
@@ -384,7 +390,10 @@ function shape(rows, g){
     }
     teams.push({nr:+nr, name:rawName, named:true, scores, done,
       bingo:  g.iBingo>=0 ? (cellNum(row[g.iBingo])||0) : null,
-      penalty:g.iPen  >=0 ? (cellNum(row[g.iPen])||0)   : 0,
+      /* Sporta carries two independent manual deductions; both are already
+         subtracted in the sheet's Kopā, so this is only what we display */
+      penalty:(g.iPen >=0 ? (cellNum(row[g.iPen])||0)  : 0)
+             +(g.iPen2>=0 ? (cellNum(row[g.iPen2])||0) : 0),
       total:  g.iTotal>=0 ? cellNum(row[g.iTotal])      : null,
       place:  g.iPlace>=0 ? cellNum(row[g.iPlace])      : null});
   }
@@ -473,16 +482,41 @@ function renderTotal(list){
 }
 
 function renderTasks(list){
+  /* Counts are for the group on screen -- a Sporta team wants to know how many
+     of the 13 have been there, not how many of all 127. DATA is already just
+     that group, so t.visited is group-scoped by construction.
+     Tasks the picked team has finished move to the bottom with a checkmark,
+     so what is still to do is what you see first. */
   const n=DATA.teams.length;
+  const me=myTeam();
+  const todo=[], done=[];
   DATA.tasks.forEach(t=>{
-    const d=el('div','row');
-    d.innerHTML='<span class="code">'+esc(t.code)+'</span>'+
-      '<span class="who"><span class="nm">'+esc(t.name)+'</span>'+
-      '<span class="sub">'+t.visited+' no '+n+' '+plural(t.visited,'komanda','komandām')+' apmeklējušas</span>'+
-      '<span class="bar"><i style="width:'+(n?t.visited/n*100:0)+'%"></i></span></span>'+
-      '<span class="pts"><b>'+t.visited+'</b><small>KOMANDAS</small></span>';
-    list.appendChild(d);
+    const v = me ? me.scores[t.col] : null;
+    const isDone = me && v!==null && v!==false;
+    (isDone?done:todo).push({t, v});
   });
+  const row=({t,v},isDone)=>{
+    const d=el('div','row'+(isDone?' done':''));
+    const pct=n?Math.round(t.visited/n*100):0;
+    d.innerHTML='<span class="code">'+(isDone?'✓':esc(t.code))+'</span>'+
+      '<span class="who"><span class="nm">'+(isDone?esc(t.code)+' · ':'')+esc(t.name)+'</span>'+
+      '<span class="sub">'+t.visited+' no '+n+' '+plural(t.visited,'komandas','komandām')+
+        ' šajā klasē'+(isDone && v!==true ? ' &nbsp;·&nbsp; tev '+v+' p' : '')+'</span>'+
+      '<span class="bar"><i style="width:'+pct+'%"></i></span></span>'+
+      '<span class="pts"><b>'+t.visited+'</b><small>KOMANDAS</small></span>';
+    return d;
+  };
+  if(me && todo.length){
+    list.appendChild(el('div','lhead','VĒL JĀDARA · '+todo.length));
+  }
+  todo.forEach(x=>list.appendChild(row(x,false)));
+  if(me && done.length){
+    list.appendChild(el('div','lhead','PADARĪTS · '+done.length+' no '+DATA.tasks.length));
+    done.forEach(x=>list.appendChild(row(x,true)));
+  }
+  if(!me){
+    list.appendChild(el('div','empty','Izvēlies komandu augšā, lai redzētu, kas tev vēl priekšā.'));
+  }
 }
 
 function isClosed(){ return !!(DATA && DATA.cutoff && Date.now() >= DATA.cutoff); }
@@ -772,38 +806,53 @@ function syncMapBtns(){
   hb.style.opacity = me ? '' : '.45';
 }
 
-function openPicker(){
+let PICKSTEP = 1;          /* 1 = choose class, 2 = choose team */
+
+function openPicker(step){
   if(!DATA) return;
   PROMPTED=true;
-  /* 127 teams across three classes, so the class has to be pickable here --
-     otherwise a Sporta team is asked to find itself in the Tautas list. */
+  PICKSTEP = step || (MYNR!=null ? 2 : 1);
+  const sheet=$('#tsheet');
   let gsel=$('#pgroup');
   if(!gsel){
     gsel=el('div','pgroup'); gsel.id='pgroup';
     $('#tpick').parentNode.insertBefore(gsel,$('#tpick'));
   }
+  /* Step 1 asks only the class. 127 teams in one list is not a choice a
+     person can make on a phone; the class narrows it to 13, 82 or 32 and the
+     second step is then a normal scroll. */
+  $('#pTitle').textContent = PICKSTEP===1 ? 'Kurā klasē tu startē?' : 'Kura ir tava komanda?';
+  $('#pSub').textContent   = PICKSTEP===1
+      ? 'Izvēlies klasi, tad ritini un izvēlies komandu.'
+      : byKey(GKEY).label + ' — ritini un atrodi savu komandu.';
   gsel.innerHTML='';
   GROUPS.forEach(g=>{
     const b=el('button', g.key===GKEY?'on':'', esc(g.label));
-    b.onclick=async()=>{ await setGroup(g.key); openPicker(); };
+    b.onclick=async()=>{ await setGroup(g.key); openPicker(2); };
     gsel.appendChild(b);
   });
-  const box=$('#tpick'); box.innerHTML='';
-  DATA.teams.filter(t=>t.named).forEach(t=>{
-    const b=el('button', MYNR===t.nr?'on':'', '<small>Nr.&nbsp;'+t.nr+'</small>'+esc(t.name));
-    b.onclick=()=>{
-      MYNR=t.nr; ASKED=true; lsSet(TEAM_KEY,String(t.nr));
-      const g=groupOfNr(t.nr); if(g) lsSet(GROUP_KEY,g.key);
-      $('#tsheet').classList.remove('on');
-      render(); if(MAP) drawPins();
-    };
-    box.appendChild(b);
-  });
-  $('#tsheet').classList.add('on');
+  const box=$('#tpick');
+  box.innerHTML='';
+  box.hidden = PICKSTEP===1;
+  $('#btnBack').hidden = PICKSTEP===1;
+  $('#btnSkip').hidden = PICKSTEP!==1;
+  if(PICKSTEP===2){
+    DATA.teams.filter(t=>t.named).forEach(t=>{
+      const b=el('button', MYNR===t.nr?'on':'', '<small>Nr.&nbsp;'+t.nr+'</small>'+esc(t.name));
+      b.onclick=()=>{
+        MYNR=t.nr; ASKED=true; lsSet(TEAM_KEY,String(t.nr));
+        const g=groupOfNr(t.nr); if(g) lsSet(GROUP_KEY,g.key);
+        sheet.classList.remove('on');
+        render(); if(MAP) drawPins();
+      };
+      box.appendChild(b);
+    });
+  }
+  sheet.classList.add('on');
 }
 
 function maybeAsk(){
-  if(!ASKED && !PROMPTED && DATA && DATA.teams.some(t=>t.named)) openPicker();
+  if(!ASKED && !PROMPTED && DATA && DATA.teams.some(t=>t.named)) openPicker(1);
 }
 
 function fitPins(){
@@ -878,7 +927,8 @@ window.addEventListener('hashchange',()=>{
      pull the rest now instead of leaving two panes empty until the next tick */
   if(tvOn()) load();
 });
-$('#hTeam').onclick=openPicker;
+$('#hTeam').onclick=()=>openPicker(1);
+$('#btnBack').onclick=()=>openPicker(1);
 $('#btnHide').onclick=()=>{ HIDEDONE=!HIDEDONE; lsSet(HIDE_KEY,HIDEDONE?'1':'0'); if(MAP) drawPins(); else syncMapBtns(); };
 $('#btnSkip').onclick=()=>{ ASKED=true; lsSet(TEAM_KEY,''); $('#tsheet').classList.remove('on'); };
 $('#tsheet').addEventListener('click',e=>{ if(e.target.dataset.tclose!==undefined) $('#tsheet').classList.remove('on'); });
