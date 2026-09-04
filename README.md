@@ -105,7 +105,12 @@ so no extra request and no second file.
   Every point gets its own pin carrying the SAME SU label, and because greying
   is decided per TASK (not per pin), one registered score greys all of that
   task's pins at once. The "x of 20 padarīti" count treats the task as one.
-- Real coordinates were loaded 2026-08-20; 20 tasks, 21 pins.
+- **Swedbank 2026-09-05: coordinates live in `v3/coords.csv` in the scoring
+  project, NOT typed into the sheet.** Row 1 is inside the range a master
+  rebuild clears, so hand-entered coordinates would vanish the next time a task
+  column was added. `build_master.coords()` reads the CSV, rejects anything
+  outside Latvia as a transcription error, and joins several points for one task
+  with `|`. 22 tasks, 23 pins (SU15 has an upstream and a downstream start).
 - Map tiles come from OpenStreetMap and Leaflet loads from unpkg, both only when
   the Karte tab is first opened. No internet -> the tab says so, the rest of the
   page still works.
