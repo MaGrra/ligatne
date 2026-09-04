@@ -65,6 +65,7 @@ nav button[aria-selected=true]{background:#fff;color:var(--forest)}
   padding:7px 6px;font-weight:800;opacity:.72}
 .gnav button[aria-selected=true]{opacity:1;background:var(--lime,#C6D93B);color:#14301f}
 .tvdots{letter-spacing:.18em}
+.dnote{font-size:12px;color:#6b7a6f;padding:8px 4px 2px;line-height:1.35}
 .lhead{
   font-size:11px;font-weight:800;letter-spacing:.10em;text-transform:uppercase;
   color:#6b7a6f;padding:14px 4px 6px}
@@ -285,18 +286,23 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
 
 <script>
 /* Three groups, one public mirror, one tab per group.
-   Column indexes are NOT the same across groups -- Sporta carries 25 task
-   columns (22 SU + BINGO + two reserved), Tautas 23, Bauda 22 ticks plus a
-   bingo count -- so every index lives here and nowhere else. The audit asserts
-   these against the live sheet headers, so a column insert cannot silently
-   shift everything. */
+   Every index lives here and nowhere else, and audit_page.py asserts them
+   against the live sheet headers so a column insert cannot silently shift
+   everything.
+
+   tFirst..tLast deliberately covers ONLY the 22 numbered SU tasks. BINGO and
+   the three Sporta race tasks are scored but are not listed anywhere on the
+   public page. Their points are still in Kopā, because Kopā is read straight
+   from the sheet's own column -- so the online order always matches the real
+   standings. The consequence to be aware of: the listed task scores add up to
+   less than the Kopā shown, by design. */
 const SHEET_ID = '1c8sSEoA28Ki13tOdA8XdzBJ7dhc42AjJtKDHCHfYZAU';
 const GROUPS = [
   {key:'Sporta', label:'Sporta',     gid:'0',
-   tFirst:2, tLast:27, iPen:28, iPen2:29, iTotal:30, iPlace:31, iDone:32, iBingo:-1,
+   tFirst:2, tLast:23, iPen:28, iPen2:29, iTotal:30, iPlace:31, iDone:32, iBingo:-1,
    scored:true,  lo:101, hi:113},
   {key:'Tautas', label:'Tautas',     gid:'110833847',
-   tFirst:2, tLast:24, iPen:25, iTotal:26, iPlace:27, iDone:28, iBingo:-1,
+   tFirst:2, tLast:23, iPen:25, iTotal:26, iPlace:27, iDone:28, iBingo:-1,
    scored:true,  lo:1,   hi:82},
   {key:'Bauda',  label:'Baudītāji',  gid:'404359574',
    tFirst:2, tLast:23, iPen:-1, iTotal:-1, iPlace:-1, iDone:25, iBingo:24,
@@ -643,6 +649,13 @@ function openTeam(t){
   $('#dPts').textContent=t.total===null?'–':t.total;
   $('#dPlace').textContent=t.place===null?'–':t.place;
   const box=$('#dTasks'); box.innerHTML='';
+  /* The listed SU tasks add up to less than Kopā, because BINGO and the Sporta
+     race tasks score but are not listed. Saying so beats being asked. */
+  const listed = DATA.tasks.reduce((a,task)=>a+(t.scores[task.col]||0),0);
+  if(t.total!==null && t.total > listed - t.penalty){
+    box.appendChild(el('div','dnote',
+      'Kopā ietilpst arī punkti par uzdevumiem, kas šeit nav uzskaitīti.'));
+  }
   DATA.tasks.forEach(task=>{
     const v=t.scores[task.col];
     const line=el('div','tline'+(v===null?' none':''));

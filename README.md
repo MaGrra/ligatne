@@ -63,6 +63,20 @@ Top of the `<script>` block in `index.html`:
     TV_CYCLE_MS  20000   how long each group holds the TV
     TV_TOP       20      82 Tautas teams will not fit one screen
 
+## Only the SU tasks are listed
+`tFirst..tLast` covers **only the 22 numbered SU tasks**. BINGO and the three
+Sporta race tasks (velo posms, svara uzdevums, trases laiks) are scored but are
+not listed anywhere on the public page — not in the team breakdown, not in the
+list under the map, not on the map.
+
+**Their points ARE still in Kopā**, because Kopā is read straight from the
+sheet's own column. That was deliberate: the online order then always matches
+the real standings. The trade-off is that the listed task scores add up to less
+than the Kopā shown — on live data by about 185 for Sporta and 11 for Tautas —
+so the team sheet carries a line saying so rather than leaving them to wonder.
+
+The internal top-3 page still shows all of them; that is the point of it.
+
 ## Column contract (must match the master) — DIFFERENT PER GROUP
 This is the thing most likely to break. Sporta carries 25 task columns (22 SU +
 BINGO + two reserved for the race), Tautas 23, Bauda 22 ticks plus a bingo
