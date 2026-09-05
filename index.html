@@ -232,10 +232,10 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
 
 <main>
   <div class="closed" id="closed" hidden>
-    <h2>Rezultāti vairs nav pieejami</h2>
-    <p>Kopvērtējums tiek noslēgts.</p>
+    <h2>Kopvērtējums ir noslēgts</h2>
+    <p>Punkti un vietas vairs netiek rādītas.</p>
     <div class="big">Tiekamies finišā!</div>
-    <p style="margin-top:14px">Karte zemāk joprojām darbojas.</p>
+    <p style="margin-top:14px">Zemāk joprojām redzams, kurus uzdevumus esi paveicis, un karte.</p>
   </div>
   <div id="mapwrap" hidden>
     <div id="map"></div>
@@ -641,9 +641,12 @@ function render(){
   $('#cd').hidden = closed || !DATA || !DATA.cutoff;
   document.querySelector('footer').hidden = false;
   $('#mapwrap').hidden = view!=='task';
-  list.hidden = closed;
+  /* The cutoff closes the KOPVĒRTĒJUMS, not the whole page. A team still needs
+     to see which tasks it has finished and where the rest are, so the task view
+     and the map keep running -- view is already forced to 'task' above, which
+     is what keeps renderTotal out of reach. */
+  list.hidden = false;
   if(view==='task'){ syncMapBtns(); initMap(); }
-  if(closed) return;
   list.innerHTML='';
   if(!DATA||!DATA.teams.length){ list.appendChild(el('div','empty','Nav datu.')); return; }
   view==='total' ? renderTotal(list) : renderTasks(list);
@@ -653,13 +656,14 @@ function openTeam(t){
   const nT=DATA.tasks.length;
   $('#dName').textContent=t.name;
   $('#dSub').textContent='Nr. '+t.nr+' · '+t.done+' no '+nT+' uzdevumiem'+(t.penalty?' · sods −'+t.penalty:'');
-  $('#dPts').textContent=t.total===null?'–':t.total;
-  $('#dPlace').textContent=t.place===null?'–':t.place;
+  const shut=isClosed();
+  $('#dPts').textContent=shut||t.total===null?'–':t.total;
+  $('#dPlace').textContent=shut||t.place===null?'–':t.place;
   const box=$('#dTasks'); box.innerHTML='';
   /* The listed SU tasks add up to less than Kopā, because BINGO and the Sporta
      race tasks score but are not listed. Saying so beats being asked. */
   const listed = DATA.tasks.reduce((a,task)=>a+(t.scores[task.col]||0),0);
-  if(t.total!==null && t.total > listed - t.penalty){
+  if(!shut && t.total!==null && t.total > listed - t.penalty){
     box.appendChild(el('div','dnote',
       'Kopā ietilpst arī punkti par uzdevumiem, kas šeit nav uzskaitīti.'));
   }
