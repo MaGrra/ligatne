@@ -191,24 +191,33 @@ first line only when the flag is present; with no flag the original path runs
 untouched.
 
 ## Internal top-3 page (unlisted)
-`iekseja-be6f4cff51bc.html` — top 3 per task, per class, for picking shout-outs
-at the ceremony. Reads the SAME mirror as the board and does the ranking in the
-browser, so there is no second data path.
+`iekseja-be6f4cff51bc.html` — top 3 per task, for picking shout-outs at the
+ceremony. Reads the SAME mirror as the board and ranks in the browser, so there
+is no second data path.
 
-**It is UNLISTED, not private.** GitHub Pages serves it to anyone with the URL.
-The filename is unguessable, `robots.txt` and a `noindex` meta keep it out of
-search, and nothing links to it — but that is obscurity. The page says so on
-itself. If it ever needs real access control, the master spreadsheet is already
-private to the three organisers and is the place to put it.
+**Mobile-first accordion.** A list of tasks, collapsed, each row showing the two
+class leaders on one line so it can be scanned without tapping. Opening a task
+shows Sporta's top 3 and then Tautas' underneath. `Atvērt visus` /
+`Aizvērt visus` for a laptop at the finish.
 
-- Baudītāji are absent on purpose: they have no scores, only attendance ticks.
-- **It ignores the cutoff.** Shout-outs happen at the ceremony, after the public
-  board has closed, so a page that closed with it would be shut when needed.
-- Ties share a place, same rule as the scoring. A tie is capped at 6 printed
-  rows with "+ vēl N ar tādu pašu rezultātu".
-- **SU1 and SU3 have nothing to single out** — flat 20p with no bonus, so on
-  live data 62 and 58 Tautas teams tie for first. The card states that outright
-  instead of printing a meaningless top 3.
+**Only the 17 tasks that award a bonus appear.** On the other nine every team
+that completes the task scores the same, so a top 3 would be sixty tied names —
+SU1 and SU3 have ~60 Tautas teams tied for first. The list is generated from the
+one task table, and `groups` is per task: **SU5 shows Tautas only**, because
+Sporta scores it 5p per answer with no ranking. `SVARS` and `LAIKS` show Sporta
+only.
+
+**It is UNLISTED, not private.** GitHub Pages serves it to anyone with the URL,
+and the filename is visible in the public repo listing. The page says so on
+itself. For real access control the master spreadsheet is already private to the
+three organisers.
+
+- Baudītāji are absent: they have no scores, only attendance ticks.
+- **It ignores the cutoff** — the shout-outs happen after the board closes.
+- Ties share a place, as the scoring does; a long tie caps at 6 rows with
+  "+ vēl N ar tādu pašu rezultātu", and a task where every team tied says so.
+- Do NOT name a top-level function `top`: it collides with the read-only
+  `window.top` and the SyntaxError kills the whole script silently.
 
 ## Team picker + greyed-out pins
 On first open the page asks in **two steps**: which class (Sporta / Tautas /

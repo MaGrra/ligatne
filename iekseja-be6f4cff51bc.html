@@ -2,215 +2,212 @@
 <html lang="lv">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#F15735">
-<!-- UNLISTED, NOT PRIVATE. GitHub Pages serves this to anyone who has the URL.
-     robots/noindex keeps it out of search engines and nothing links to it, but
-     it is obscurity, not access control. -->
+<!-- UNLISTED, NOT PRIVATE. GitHub Pages serves this to anyone with the URL.
+     noindex keeps it out of search and nothing links to it, but that is
+     obscurity, not access control. -->
 <meta name="robots" content="noindex,nofollow,noarchive">
 <meta name="referrer" content="no-referrer">
-<title>Iekšējais · TOP 3 pa uzdevumiem</title>
+<title>Iekšējais · TOP 3</title>
 <style>
-/* same sampled palette as the public board */
-:root{--ink:#162C22;--brand:#F15735;--brand-dk:#C93A18;--brand-pale:#FDEDE8;
-      --blue:#1368B2;--line:#E7E0DA;--dim:#6E6A66;--gold:#F15735}
+:root{--brand:#F15735;--brand-dk:#C93A18;--brand-pale:#FDEDE8;--brand-chip:#A82B0C;
+      --ink:#162C22;--line:#E7E0DA;--dim:#6E6A66;--bg:#F7F4F1}
 *{box-sizing:border-box}
-body{margin:0;background:#f6f8f6;color:var(--ink);
-  font:15px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif}
-header{position:sticky;top:0;z-index:5;
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:16px/1.45 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+  -webkit-font-smoothing:antialiased;padding-bottom:env(safe-area-inset-bottom)}
+header{position:sticky;top:0;z-index:9;padding:11px 15px;color:#fff;
   background:linear-gradient(165deg,var(--brand),var(--brand-dk));
-  color:#fff;padding:12px 14px}
-.h1{font-size:17px;font-weight:800;letter-spacing:.01em}
-.meta{font-size:12px;opacity:.85;margin-top:3px}
-.warn{background:#3A1A12;color:#fff;font-size:12px;padding:7px 14px}
-nav{display:flex;gap:6px;padding:10px 14px;background:#fff;border-bottom:1px solid var(--line);
-  position:sticky;top:66px;z-index:4}
-nav button{flex:1;padding:8px 6px;border:0;border-radius:9px;font:inherit;font-size:13px;
-  font-weight:800;text-transform:uppercase;letter-spacing:.04em;background:#e9eee9;color:#3a4a3a}
-nav button[aria-selected=true]{background:var(--brand-dk);color:#fff}
-main{padding:12px 10px 60px;max-width:1100px;margin:0 auto}
-.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(310px,1fr))}
-.card{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-.ct{padding:9px 12px;border-bottom:1px solid var(--line);display:flex;
-  justify-content:space-between;align-items:baseline;gap:8px}
-.cc{font-weight:800;font-size:13px;color:var(--brand-dk)}
-.cn{font-size:12px;color:var(--dim);text-align:right;flex:1}
-.r{display:flex;align-items:center;gap:9px;padding:7px 12px;border-top:1px solid #f0f3f0}
-.r:first-of-type{border-top:0}
-.p{width:22px;height:22px;border-radius:50%;background:#eef1ee;color:#5a6a5e;
-  font-size:12px;font-weight:800;display:grid;place-items:center;flex:0 0 auto}
-.r.g1 .p{background:var(--gold);color:#fff}
-.nm{flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  box-shadow:0 2px 14px rgba(0,0,0,.2);padding-top:calc(11px + env(safe-area-inset-top))}
+.h1{font-size:17px;font-weight:800;letter-spacing:.01em;text-transform:uppercase}
+.meta{font-size:12px;margin-top:5px;display:flex;align-items:center;gap:6px;
+  background:rgba(0,0,0,.24);border-radius:999px;padding:3px 9px;width:fit-content}
+.dot{width:8px;height:8px;border-radius:50%}
+.dot{background:#fff}.dot.stale{background:#FFD166}.dot.off{background:#3A1A12}
+.warn{background:#3A1A12;color:#fff;font-size:12px;padding:7px 15px;line-height:1.35}
+main{padding:10px 10px 70px;max-width:760px;margin:0 auto}
+.t{background:#fff;border:1px solid var(--line);border-radius:12px;margin-bottom:8px;overflow:hidden}
+.th{display:flex;align-items:center;gap:10px;padding:13px;cursor:pointer;
+  -webkit-tap-highlight-color:transparent}
+.code{flex:0 0 auto;min-width:54px;text-align:center;font-weight:800;font-size:12px;
+  padding:5px 7px;border-radius:7px;background:var(--brand-pale);color:var(--brand-chip)}
+.nm{flex:1;font-weight:700;font-size:15px;min-width:0}
+.lead{display:block;font-weight:400;font-size:12px;color:var(--dim);margin-top:2px;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.chev{flex:0 0 auto;color:var(--dim);font-size:19px;transition:transform .18s;line-height:1}
+.t.open .chev{transform:rotate(90deg)}
+.body{display:none;border-top:1px solid var(--line);padding:2px 0 8px}
+.t.open .body{display:block}
+.gh{font-size:11px;font-weight:800;letter-spacing:.1em;text-transform:uppercase;
+  color:var(--dim);padding:11px 14px 3px}
+.r{display:flex;align-items:center;gap:10px;padding:7px 14px}
+.p{width:23px;height:23px;border-radius:50%;background:#eee9e5;color:#5a544e;font-size:12px;
+  font-weight:800;display:grid;place-items:center;flex:0 0 auto}
+.r.g1 .p{background:var(--brand);color:#fff}
+.tn{flex:1;font-weight:600;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .nr{font-size:11px;color:var(--dim);flex:0 0 auto}
-.v{font-weight:800;font-variant-numeric:tabular-nums;flex:0 0 auto}
-.none{padding:9px 12px;color:var(--dim);font-size:13px}
-.dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#8fd18f;margin-right:5px}
-.dot.stale{background:#e5b23c}.dot.off{background:#d96b6b}
-button.rf{margin:14px auto 0;display:block;padding:9px 16px;border:1px solid var(--line);
-  border-radius:10px;background:#fff;font:inherit;font-weight:700}
+.v{font-weight:800;font-variant-numeric:tabular-nums;flex:0 0 auto;color:var(--brand-dk)}
+.none{padding:5px 14px 9px;color:var(--dim);font-size:13px}
+.bar{display:flex;gap:8px;padding:2px 0 12px}
+.bar button{flex:1;padding:11px 6px;border:1px solid var(--line);border-radius:10px;
+  background:#fff;font:inherit;font-weight:700;font-size:13px;color:var(--ink)}
 </style>
 </head>
 <body>
 <header>
-  <div class="h1">TOP 3 pa uzdevumiem · iekšējai lietošanai</div>
+  <div class="h1">TOP 3 · iekšējai lietošanai</div>
   <div class="meta"><span class="dot" id="dot"></span><span id="stamp">ielādē…</span></div>
 </header>
-<div class="warn">Nav paredzēts dalībniekiem. Saite ir neuzminējama, bet nav aizsargāta ar paroli — nesūti to tālāk.</div>
-<nav role="tablist" id="gnav"></nav>
+<div class="warn">Nav paredzēts dalībniekiem. Saite nav aizsargāta ar paroli — nesūti to tālāk.</div>
 <main>
-  <div class="grid" id="grid"></div>
-  <button class="rf" id="rf">Atjaunot tagad</button>
+  <div class="bar">
+    <button id="expandAll">Atvērt visus</button>
+    <button id="collapseAll">Aizvērt visus</button>
+    <button id="rf">Atjaunot</button>
+  </div>
+  <div id="list"></div>
 </main>
 <script>
-/* Reads the SAME public mirror as the board and works out the top 3 per task in
-   the browser. No extra spreadsheet, no extra requests, one data path to keep
-   working. Baudītāji are deliberately absent: they have no scores, only
-   attendance ticks, so there is nothing to rank. */
-const SHEET_ID = '1c8sSEoA28Ki13tOdA8XdzBJ7dhc42AjJtKDHCHfYZAU';
-const GROUPS = [
-  {key:'Sporta', label:'Sporta', gid:'0',         tFirst:2, tLast:27},
-  {key:'Tautas', label:'Tautas', gid:'110833847', tFirst:2, tLast:24}
+/* Only tasks that actually award a bonus. On the rest every team that completes
+   the task scores the same, so a "top 3" would list sixty tied names and tell
+   you nothing. Generated from the one task table; `groups` lists the classes
+   where THAT task has a bonus -- SU5 is Tautas only, because Sporta scores it
+   5p per answer with no ranking at all. */
+const TASKS = [
+  {code:"SU2", title:"SU2 - Vien-eiro regate", name:"Vien-eiro regate", groups:["Sporta", "Tautas"]},
+  {code:"SU5", title:"SU5 - Dārgais papīrs", name:"Dārgais papīrs", groups:["Tautas"]},
+  {code:"SU7", title:"SU7 - Ūdens rozes", name:"Ūdens rozes", groups:["Sporta", "Tautas"]},
+  {code:"SU10", title:"SU10 - Zvirbuļu Pēteris", name:"Zvirbuļu Pēteris", groups:["Sporta", "Tautas"]},
+  {code:"SU11", title:"SU11 - Safari", name:"Safari", groups:["Sporta", "Tautas"]},
+  {code:"SU12", title:"SU12 - Dārzeņu pagrabs", name:"Dārzeņu pagrabs", groups:["Sporta", "Tautas"]},
+  {code:"SU13", title:"SU13 - Ūdens rallijs", name:"Ūdens rallijs", groups:["Sporta", "Tautas"]},
+  {code:"SU14", title:"SU14 - Līgatnes trīscīņa", name:"Līgatnes trīscīņa", groups:["Sporta", "Tautas"]},
+  {code:"SU16", title:"SU16 - Alas iemītnieki", name:"Alas iemītnieki", groups:["Sporta", "Tautas"]},
+  {code:"SU17", title:"SU17 - Pirtnieku grava", name:"Pirtnieku grava", groups:["Sporta", "Tautas"]},
+  {code:"SU18", title:"SU18 - Marināde", name:"Marināde", groups:["Sporta", "Tautas"]},
+  {code:"SU19", title:"SU19 - Fabrikas sargi", name:"Fabrikas sargi", groups:["Sporta", "Tautas"]},
+  {code:"SU20", title:"SU20 - Zirga zāle", name:"Zirga zāle", groups:["Sporta", "Tautas"]},
+  {code:"SU21", title:"SU21 - Līgatnes vesterns", name:"Līgatnes vesterns", groups:["Sporta", "Tautas"]},
+  {code:"SU22", title:"SU22 - Putnu parks", name:"Putnu parks", groups:["Sporta", "Tautas"]},
+  {code:"SVARS", title:"SPORTA svara uzdevums", name:"SPORTA svara uzdevums", groups:["Sporta"]},
+  {code:"LAIKS", title:"SPORTA trases laiks", name:"SPORTA trases laiks", groups:["Sporta"]}
 ];
-const REFRESH_MS = 30000;
-const TOPN = 3;
-const MAXROWS = 6;      /* a tie can run to dozens; do not print them all */
-const src = g => 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+
-                 '/export?format=csv&gid='+g.gid+'&t='+Date.now();
-const CACHE = k => 'swd-top3-'+k;
-
-let GKEY = 'Tautas', ALL = {}, LASTOK = Date.now(), OK = true;
-const $ = s => document.querySelector(s);
+const SHEET_ID = "1c8sSEoA28Ki13tOdA8XdzBJ7dhc42AjJtKDHCHfYZAU";
+const GIDS = {Sporta:"0", Tautas:"110833847"};
+const REFRESH_MS = 30000, TOPN = 3, MAXROWS = 6;
+const src = g => "https://docs.google.com/spreadsheets/d/"+SHEET_ID+
+                 "/export?format=csv&gid="+GIDS[g]+"&t="+Date.now();
+let RAW = {}, OPEN = {}, LASTOK = Date.now(), OK = true;
+const q = s => document.querySelector(s);
 const el = (t,c,h) => { const e=document.createElement(t); if(c)e.className=c;
                         if(h!==undefined)e.innerHTML=h; return e; };
-const esc = s => String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-
-function parseCSV(text){
-  const rows=[]; let row=[], f='', q=false;
-  for(let i=0;i<text.length;i++){
-    const c=text[i];
-    if(q){ if(c==='"'){ if(text[i+1]==='"'){f+='"';i++;} else q=false; } else f+=c; }
-    else if(c==='"'){ q=true; }
-    else if(c===','){ row.push(f); f=''; }
-    else if(c==='\n'){ row.push(f); rows.push(row); row=[]; f=''; }
-    else if(c!=='\r'){ f+=c; }
-  }
+const esc = s => String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function parseCSV(t){
+  const rows=[]; let row=[], f="", qq=false;
+  for(let i=0;i<t.length;i++){ const c=t[i];
+    if(qq){ if(c==='"'){ if(t[i+1]==='"'){f+='"';i++;} else qq=false; } else f+=c; }
+    else if(c==='"'){ qq=true; }
+    else if(c===","){ row.push(f); f=""; }
+    else if(c==="\n"){ row.push(f); rows.push(row); row=[]; f=""; }
+    else if(c!=="\r"){ f+=c; } }
   if(f.length||row.length){ row.push(f); rows.push(row); }
   return rows;
 }
-const cellNum = v => {
-  const s=(v==null?'':String(v)).trim();
-  if(s==='') return null;
-  const n=parseFloat(s.replace(',','.'));
-  return isNaN(n)?null:n;
-};
-
-function shape(rows, g){
+const num = v => { const s=(v==null?"":String(v)).trim();
+  if(s==="") return null; const n=parseFloat(s.replace(",",".")); return isNaN(n)?null:n; };
+/* NOT named `top`: that is a read-only window global, and declaring a
+   function over it is a SyntaxError that kills the entire script. */
+function topThree(group, title){
+  const rows = RAW[group];
+  if(!rows) return null;
   const head = rows[1] || [];
-  const tasks = [];
-  for(let c=g.tFirst;c<=g.tLast;c++){
-    const raw=(head[c]||'').trim(); if(!raw) continue;
-    const sp=raw.indexOf(' ');
-    tasks.push({col:c, code: sp<0?raw:raw.slice(0,sp), name: sp<0?raw:raw.slice(sp+1), rows:[]});
-  }
+  let col = -1;
+  for(let c=0;c<head.length;c++) if((head[c]||"").trim() === title){ col=c; break; }
+  if(col < 0) return null;
+  const all=[];
   for(let r=2;r<rows.length;r++){
     const row=rows[r]; if(!row) continue;
-    const nr=(row[0]||'').trim(), name=(row[1]||'').trim();
-    if(!/^\d+$/.test(nr) || !name) continue;   /* a numbered row with no name is not a team */
-    tasks.forEach(t=>{
-      const v=cellNum(row[t.col]);
-      if(v!==null) t.rows.push({nr:+nr, name, v});
-    });
+    const nr=(row[0]||"").trim(), nm=(row[1]||"").trim();
+    const v=num(row[col]);
+    if(/^\d+$/.test(nr) && nm && v!==null) all.push({nr:+nr, name:nm, v});
   }
-  tasks.forEach(t=>{
-    t.rows.sort((a,b)=>(b.v-a.v)||(a.nr-b.nr));
-    /* Ties share the place, so a three-way tie for first shows three golds and
-       no second -- the same rule the scoring itself uses. */
-    let place=0, prev=null;
-    t.rows.forEach((x,i)=>{ if(x.v!==prev){ place=i+1; prev=x.v; } x.place=place; });
-    t.top = t.rows.filter(x=>x.place<=TOPN);
-    t.n = t.rows.length;
-    /* An all-or-nothing task (SU1, SU3) gives every finisher the same score, so
-       everyone ties for first and there is nothing to single out. Say that
-       instead of printing sixty names under a "TOP 3" heading. */
-    const distinct = new Set(t.rows.map(x=>x.v)).size;
-    t.flat = t.n > 1 && distinct === 1;
-    t.hidden = Math.max(0, t.top.length - MAXROWS);
-    if(t.hidden) t.top = t.top.slice(0, MAXROWS);
-  });
-  return tasks;
+  all.sort((a,b)=>(b.v-a.v)||(a.nr-b.nr));
+  /* ties share a place, exactly as the scoring does */
+  let place=0, prev=null;
+  all.forEach((x,i)=>{ if(x.v!==prev){ place=i+1; prev=x.v; } x.place=place; });
+  const distinct = new Set(all.map(x=>x.v)).size;
+  let list = all.filter(x=>x.place<=TOPN);
+  const hidden = Math.max(0, list.length-MAXROWS);
+  if(hidden) list = list.slice(0,MAXROWS);
+  return {list, hidden, n: all.length, flat: all.length>1 && distinct===1};
 }
-
 function render(){
-  const g=GROUPS.find(x=>x.key===GKEY);
-  const tasks=ALL[GKEY];
-  const grid=$('#grid'); grid.innerHTML='';
-  if(!tasks){ grid.appendChild(el('div','none','Nav datu.')); return; }
-  tasks.forEach(t=>{
-    const c=el('div','card');
-    c.appendChild(el('div','ct','<span class="cc">'+esc(t.code)+'</span>'+
-      '<span class="cn">'+esc(t.name)+'<br>'+t.n+' ar rezultātu</span>'));
-    if(!t.top.length){ c.appendChild(el('div','none','vēl nav rezultātu')); }
-    else if(t.flat){
-      c.appendChild(el('div','none','visām '+t.n+' komandām vienāds rezultāts ('+
-        t.rows[0].v+') — nav ko izcelt'));
-    }
-    else {
-      t.top.forEach(x=>{
-        c.appendChild(el('div','r'+(x.place===1?' g1':''),
-          '<span class="p">'+x.place+'</span>'+
-          '<span class="nm">'+esc(x.name)+'</span>'+
-          '<span class="nr">Nr.&nbsp;'+x.nr+'</span>'+
-          '<span class="v">'+x.v+'</span>'));
-      });
-      if(t.hidden) c.appendChild(el('div','none','+ vēl '+t.hidden+
-        ' ar tādu pašu rezultātu'));
-    }
-    grid.appendChild(c);
+  const box=q("#list"), scroll=window.scrollY;
+  box.innerHTML="";
+  TASKS.forEach(t=>{
+    const card=el("div","t"+(OPEN[t.code]?" open":""));
+    const res={}; t.groups.forEach(g=>res[g]=topThree(g,t.title));
+    const leaders=t.groups.map(g=>{
+      const r=res[g];
+      if(!r||!r.list.length) return g.slice(0,3)+": —";
+      if(r.flat) return g.slice(0,3)+": visi vienādi";
+      return g.slice(0,3)+": "+r.list[0].name;
+    }).join("   ·   ");
+    const head=el("div","th",
+      '<span class="code">'+esc(t.code)+'</span>'+
+      '<span class="nm">'+esc(t.name)+'<span class="lead">'+esc(leaders)+'</span></span>'+
+      '<span class="chev">&rsaquo;</span>');
+    head.onclick=()=>{ OPEN[t.code]=!OPEN[t.code]; card.classList.toggle("open"); };
+    card.appendChild(head);
+    const body=el("div","body");
+    t.groups.forEach(g=>{
+      const r=res[g];
+      body.appendChild(el("div","gh", g==="Sporta"?"Sporta klase":"Tautas klase"));
+      if(!r){ body.appendChild(el("div","none","nav datu")); return; }
+      if(r.flat){ body.appendChild(el("div","none",
+        "visām "+r.n+" komandām vienāds rezultāts — nav ko izcelt")); return; }
+      if(!r.list.length){ body.appendChild(el("div","none","vēl nav rezultātu")); return; }
+      r.list.forEach(x=>body.appendChild(el("div","r"+(x.place===1?" g1":""),
+        '<span class="p">'+x.place+'</span>'+
+        '<span class="tn">'+esc(x.name)+'</span>'+
+        '<span class="nr">Nr.&nbsp;'+x.nr+'</span>'+
+        '<span class="v">'+x.v+'</span>')));
+      if(r.hidden) body.appendChild(el("div","none",
+        "+ vēl "+r.hidden+" ar tādu pašu rezultātu"));
+    });
+    card.appendChild(body);
+    box.appendChild(card);
   });
-  [...$('#gnav').children].forEach(b=>b.ariaSelected=String(b.dataset.g===GKEY));
+  window.scrollTo(0, scroll);
   const s=Math.round((Date.now()-LASTOK)/1000);
-  $('#stamp').textContent = OK
-    ? (s<60?'atjaunots pirms '+s+' s':'atjaunots pirms '+Math.round(s/60)+' min')
-    : 'nav savienojuma';
-  $('#dot').className='dot'+(!OK?' off':(Date.now()-LASTOK>3*REFRESH_MS?' stale':''));
+  q("#stamp").textContent = OK ? (s<60?"pirms "+s+" s":"pirms "+Math.round(s/60)+" min")
+                               : "nav savienojuma";
+  q("#dot").className="dot"+(!OK?" off":(Date.now()-LASTOK>3*REFRESH_MS?" stale":""));
 }
-
 async function loadOne(g){
   try{
-    const res=await fetch(src(g),{cache:'no-store'});
+    const res=await fetch(src(g),{cache:"no-store"});
     if(!res.ok) throw new Error(res.status);
     const text=await res.text();
-    ALL[g.key]=shape(parseCSV(text),g);
-    try{ localStorage.setItem(CACHE(g.key),text); }catch(e){}
+    RAW[g]=parseCSV(text);
+    try{ localStorage.setItem("swd-t3-"+g, text); }catch(e){}
     return true;
   }catch(e){
-    if(!ALL[g.key]){
-      try{
-        const t=localStorage.getItem(CACHE(g.key));
-        if(t) ALL[g.key]=shape(parseCSV(t),g);
-      }catch(_){}
-    }
+    if(!RAW[g]){ try{ const t=localStorage.getItem("swd-t3-"+g); if(t) RAW[g]=parseCSV(t); }catch(_){} }
     return false;
   }
 }
 async function load(){
-  /* Both groups every time: this page is read on a laptop at the finish, not on
-     a phone in a forest, and switching tabs should be instant. */
-  const oks=await Promise.all(GROUPS.map(loadOne));
-  OK=oks.some(Boolean);
-  if(OK) LASTOK=Date.now();
+  const oks=await Promise.all(Object.keys(GIDS).map(loadOne));
+  OK=oks.some(Boolean); if(OK) LASTOK=Date.now();
   render();
 }
-GROUPS.forEach(g=>{
-  const b=el('button','',esc(g.label));
-  b.setAttribute('role','tab'); b.dataset.g=g.key;
-  b.onclick=()=>{ GKEY=g.key; render(); };
-  $('#gnav').appendChild(b);
-});
-$('#rf').onclick=load;
-document.addEventListener('visibilitychange',()=>{ if(!document.hidden) load(); });
-/* No cutoff here on purpose: the shout-outs happen at the ceremony, which is
-   after the public board has closed. */
+q("#expandAll").onclick=()=>{ TASKS.forEach(t=>OPEN[t.code]=true); render(); };
+q("#collapseAll").onclick=()=>{ OPEN={}; render(); };
+q("#rf").onclick=load;
+document.addEventListener("visibilitychange",()=>{ if(!document.hidden) load(); });
+/* no cutoff on purpose: the shout-outs happen after the public board closes */
 load();
 setInterval(load, REFRESH_MS);
 setInterval(render, 1000);
