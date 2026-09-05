@@ -151,18 +151,39 @@ body.tvmode #tvwrap{display:flex;flex-direction:column;height:100vh;padding:2.4v
 .tvtitle{font-size:clamp(18px,3.4vh,46px);font-weight:800;color:var(--forest);text-transform:uppercase;letter-spacing:-.01em}
 .tvmeta{font-size:clamp(11px,1.8vh,23px);color:var(--muted);font-weight:600;white-space:nowrap}
 .tvmeta b{color:var(--brick)}
-.tvgrid{flex:1 1 auto;display:grid;grid-auto-flow:column;gap:.55vh 1.5vw;min-height:0}
-.tvrow{display:flex;align-items:center;gap:1vw;background:var(--card);border:1px solid var(--line);
-  border-radius:1vh;padding:0 1vw;min-height:0;overflow:hidden}
-.tvrow.p1{border-left:.45vw solid var(--g1)}
-.tvrow.p2{border-left:.45vw solid var(--g2)}
-.tvrow.p3{border-left:.45vw solid var(--g3)}
-.tvpl{flex:0 0 auto;min-width:2.8vw;text-align:center;font-weight:800;color:var(--brand-dk);
-  font-size:clamp(15px,2.9vh,40px);font-variant-numeric:tabular-nums}
-.tvwho{flex:1 1 auto;min-width:0}
-.tvnm{display:block;font-size:clamp(12px,2.3vh,31px);font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tvsub{display:block;font-size:clamp(9px,1.5vh,19px);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.tvpts{flex:0 0 auto;font-weight:800;color:var(--forest);font-size:clamp(16px,3.1vh,44px);font-variant-numeric:tabular-nums}
+.tvgrid{flex:1 1 auto;display:grid;grid-auto-flow:column;gap:.5vh 1.2vw;min-height:0}
+/* One line per team: vieta · Nr · komanda · uzdevumi · punkti. Every group is
+   shown whole, so the only thing that varies is how tight it has to be. */
+.tvrow{display:flex;align-items:center;gap:.8vw;background:var(--card);border:1px solid var(--line);
+  border-radius:.8vh;padding:0 .8vw;min-height:0;overflow:hidden}
+.tvrow.p1{border-left:.4vw solid var(--g1)}
+.tvrow.p2{border-left:.4vw solid var(--g2)}
+.tvrow.p3{border-left:.4vw solid var(--g3)}
+.tvpl{flex:0 0 auto;text-align:right;font-weight:800;color:var(--brand-dk);font-variant-numeric:tabular-nums}
+.tvnr{flex:0 0 auto;text-align:right;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.tvnm{flex:1 1 auto;min-width:0;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tvdone{flex:0 0 auto;text-align:right;font-weight:700;color:var(--muted);font-variant-numeric:tabular-nums}
+.tvdone i{font-style:normal;font-size:.62em;margin-left:.2em;letter-spacing:.02em}
+.tvdone.big{color:var(--forest);font-weight:800}
+.tvpts{flex:0 0 auto;text-align:right;font-weight:800;color:var(--forest);font-variant-numeric:tabular-nums}
+/* c1 = a short group gets the full width; c3 = 82 teams, so everything shrinks */
+.tvgrid.c1 .tvpl{min-width:3.2vw;font-size:clamp(16px,3.4vh,46px)}
+.tvgrid.c1 .tvnr{min-width:3vw;font-size:clamp(11px,2vh,26px)}
+.tvgrid.c1 .tvnm{font-size:clamp(14px,3vh,40px)}
+.tvgrid.c1 .tvdone{min-width:6vw;font-size:clamp(12px,2.2vh,29px)}
+.tvgrid.c1 .tvpts{min-width:7vw;font-size:clamp(17px,3.6vh,48px)}
+.tvgrid.c2 .tvpl{min-width:2.6vw;font-size:clamp(13px,2.5vh,32px)}
+.tvgrid.c2 .tvnr{min-width:2.4vw;font-size:clamp(10px,1.6vh,20px)}
+.tvgrid.c2 .tvnm{font-size:clamp(12px,2.2vh,28px)}
+.tvgrid.c2 .tvdone{min-width:5vw;font-size:clamp(11px,1.9vh,24px)}
+.tvgrid.c2 .tvpts{min-width:5.5vw;font-size:clamp(14px,2.7vh,35px)}
+.tvgrid.c3 .tvpl{min-width:1.9vw;font-size:clamp(11px,1.9vh,24px)}
+.tvgrid.c3 .tvnr{min-width:1.8vw;font-size:clamp(9px,1.3vh,16px)}
+.tvgrid.c3 .tvnm{font-size:clamp(10px,1.75vh,22px)}
+.tvgrid.c3 .tvdone{min-width:3.4vw;font-size:clamp(9px,1.45vh,18px)}
+.tvgrid.c3 .tvpts{min-width:4vw;font-size:clamp(11px,2vh,26px)}
+.tvlegend{font-size:clamp(9px,1.4vh,18px);color:var(--muted);font-weight:700;letter-spacing:.06em;
+  text-transform:uppercase;margin-bottom:.8vh;flex:0 0 auto}
 .tvclosed{flex:1 1 auto;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
 .tvclosed h2{font-size:clamp(22px,6vh,78px);margin:0 0 2vh;color:var(--forest)}
 .tvclosed p{font-size:clamp(14px,3vh,40px);margin:0;color:var(--muted)}
@@ -255,6 +276,7 @@ footer{text-align:center;color:var(--muted);font-size:12px;padding:22px 12px 30p
     <div class="tvtitle">Kopvērtējums</div>
     <div class="tvmeta" id="tvMeta"></div>
   </div>
+  <div class="tvlegend" id="tvLegend"></div>
   <div class="tvgrid" id="tvGrid"></div>
 </div>
 <button class="tvexit" id="btnTvExit" hidden>Iziet no TV</button>
@@ -317,8 +339,7 @@ const GROUPS = [
 ];
 const I_CUTOFF = 38;            /* AM1 on every tab */
 const REFRESH_MS = 30000;
-const TV_CYCLE_MS = 20000;
-const TV_TOP = 20;              /* 82 Tautas teams will not fit a screen */
+const TV_CYCLE_MS = 60000;      /* one minute per group */
 const GROUP_KEY = 'swd-group-v1';
 const byKey = k => GROUPS.find(g=>g.key===k) || GROUPS[1];
 const srcFor = g => 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+
@@ -594,32 +615,40 @@ function renderTV(){
   if(closedBox) closedBox.hidden=true;
   grid.style.display='';
   const scored=g.scored;
-  let all = scored ? D.teams.filter(t=>t.total!==null).sort((a,b)=>(b.total-a.total)||(a.nr-b.nr))
-                   : D.teams.filter(t=>t.place!==null)
-                       .sort((a,b)=>(b.done-a.done)||((b.bingo||0)-(a.bingo||0))||(a.nr-b.nr));
-  const cut = all.length>TV_TOP;
-  const list = cut ? all.slice(0,TV_TOP) : all;
+  /* Every team, not a top-N slice: this board is the whole class. Teams with
+     nothing yet sort last rather than disappearing, so the count on screen
+     always matches the count in the header. */
+  const list = D.teams.slice().sort(scored
+    ? (a,b)=>((b.total==null?-1:b.total)-(a.total==null?-1:a.total))||(a.nr-b.nr)
+    : (a,b)=>(b.done-a.done)||((b.bingo||0)-(a.bingo||0))||(a.nr-b.nr));
+  /* 13 teams read best full width; 82 only fit in three columns. Names here run
+     to 33 characters, which is why this tops out at three and not four. */
+  const n=list.length;
+  const cols = n<=14 ? 1 : n<=44 ? 2 : 3;
   const left=D.cutoff ? D.cutoff-Date.now() : 0;
   const dots=gs.map((x,i)=>i===TVI?'●':'○').join('');
-  $('.tvtitle').textContent = g.label.toUpperCase() + (cut?' · TOP '+TV_TOP:'');
+  const nT=D.tasks.length;
+  $('.tvtitle').textContent = g.label.toUpperCase();
   $('#tvMeta').innerHTML=(left>0?'<b>vēl '+fmtLeft(left)+'</b> &nbsp;·&nbsp; ':'')+
-    all.length+' komandas &nbsp;·&nbsp; '+fmtAgo(D.stamp||LASTOK)+
+    n+' komandas &nbsp;·&nbsp; '+fmtAgo(D.stamp||LASTOK)+
     (gs.length>1?' &nbsp;·&nbsp; <span class="tvdots">'+dots+'</span>':'');
-  const sig=g.key+'|'+list.map(t=>t.nr+':'+t.total+':'+t.place+':'+t.done+':'+t.bingo+':'+t.penalty).join('|');
+  $('#tvLegend').textContent = scored
+    ? 'Vieta · Nr · Komanda · Uzdevumi (no '+nT+') · Punkti'
+    : 'Vieta · Nr · Komanda · Apmeklētie uzdevumi (no '+nT+')';
+  const sig=g.key+'|'+cols+'|'+list.map(t=>t.nr+':'+t.total+':'+t.place+':'+t.done+':'+t.bingo+':'+t.penalty).join('|');
   if(sig===TVSIG) return;
   TVSIG=sig;
-  grid.style.gridTemplateRows='repeat('+Math.ceil(list.length/2)+',1fr)';
+  grid.className='tvgrid c'+cols;
+  grid.style.gridTemplateRows='repeat('+Math.ceil(n/cols)+',1fr)';
   grid.innerHTML='';
-  const nT=D.tasks.length;
   list.forEach(t=>{
     const p=t.place;
     const d=el('div','tvrow'+(p&&p<=3?' p'+p:''));
     d.innerHTML='<span class="tvpl">'+(p||'–')+'</span>'+
-      '<span class="tvwho"><span class="tvnm">'+esc(t.name)+'</span>'+
-      '<span class="tvsub">Nr.&nbsp;'+t.nr+' &nbsp;·&nbsp; '+t.done+' no '+nT+' uzd.'+
-      (!scored && t.bingo!==null ? ' &nbsp;·&nbsp; '+t.bingo+' bingo':'')+
-      (t.penalty?' &nbsp;·&nbsp; sods −'+t.penalty:'')+'</span></span>'+
-      '<span class="tvpts">'+(scored?t.total:t.done)+'</span>';
+      '<span class="tvnr">'+t.nr+'</span>'+
+      '<span class="tvnm">'+esc(t.name)+'</span>'+
+      '<span class="tvdone'+(scored?'':' big')+'">'+t.done+'<i>uzd</i></span>'+
+      (scored?'<span class="tvpts">'+(t.total==null?'–':t.total)+'</span>':'');
     grid.appendChild(d);
   });
 }
